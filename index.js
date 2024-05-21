@@ -1,8 +1,20 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const cors = require('cors')
 
 const app = express()
 const PORT = process.env.PORT || 5000
+
+app.use(express.json({ extended: true }))
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true,
+  optionSuccessStatus: 200,
+}
+
+app.use(cors(corsOptions))
+
+app.use('/api/auth', require('./routes/auth.route'))
 
 const start = async () => {
   try {
