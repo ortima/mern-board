@@ -3,11 +3,13 @@ import React, { PropsWithChildren, createContext, useContext, useState, useEffec
 export interface UserData {
   token: string;
   userId: string;
+  email?: string;
 }
 
 export interface AuthContextType {
   userData: UserData | null;
-  login: (token: string, userId: string) => void;
+  login: (token: string, userId: string, email?: string
+  ) => void;
   logout: () => void;
   loading: boolean;
 }
@@ -31,8 +33,8 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = (token: string, userId: string) => {
-    const userData: UserData = { token, userId };
+  const login = (token: string, userId: string, email?: string) => {
+    const userData: UserData = { token, userId, email };
     localStorage.setItem('userData', JSON.stringify(userData));
     setUserData(userData);
   };

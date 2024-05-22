@@ -73,7 +73,8 @@ export default function Login() {
 
       if (response.status === 200) {
         console.log('User login successfully!');
-        auth.login(response.data.token, response.data.userId)
+        auth.login(response.data.token, response.data.userId, response.data.email)
+        console.log(response.data.email)
         navigate('/dashboard');
       } else {
         console.log('Registration failed!');

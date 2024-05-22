@@ -3,11 +3,11 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
-import { Home } from './pages/Home';
 import Login from "./pages/Login";
 import { AuthProvider } from "./context/authContext";
 import PrivateRoute from "./utils/ProtectedRoutes";
 import Registration from "./pages/Registration";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
 
@@ -18,7 +18,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/registration" element={<Registration />} />
           <Route element={<PrivateRoute />}>
-            <Route path="/dashboard" element={<Home />} />
+            <Route path="/dashboard" element={<Dashboard />} />
           </Route>
         </Routes>
       </BrowserRouter>

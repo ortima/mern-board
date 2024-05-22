@@ -77,7 +77,7 @@ router.post(
       const token = jwt.sign({ userId: user.id }, SECRET_KEY_JWT, {
         expiresIn: '1h',
       })
-      res.json({ token, userId: user.id })
+      res.json({ token, userId: user.id, email: user.email })
     } catch (e) {
       res.status(500).json({ message: 'Server error' })
     }
