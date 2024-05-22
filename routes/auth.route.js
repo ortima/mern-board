@@ -67,9 +67,9 @@ router.post(
           .json({ message: 'Email is not registred in database' })
       }
 
-      const isMatched = bcrypt.compare(password, user.password)
+      const isMatched = await bcrypt.compare(password, user.password)
       if (!isMatched) {
-        return res.status(400).json({ message: 'Passwords dont match' })
+        return res.status(400).json({ message: 'Password incorrect' })
       }
 
       const SECRET_KEY_JWT = 'ortima' //TODO: поменять токен и вынести в env

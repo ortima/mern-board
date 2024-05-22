@@ -1,7 +1,8 @@
 import Button from '@mui/material/Button';
-import React from 'react';
 
 export const Home = () => {
+
+  console.log('FROM HOME')
   return (
     <main>
       <Button variant="outlined">Hello world</Button>

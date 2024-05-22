@@ -8,7 +8,7 @@ import Checkbox from '@mui/joy/Checkbox';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
 import IconButton, { IconButtonProps } from '@mui/joy/IconButton';
-import Link from '@mui/joy/Link';
+import { Link, useNavigate } from 'react-router-dom';
 import Input from '@mui/joy/Input';
 import Typography from '@mui/joy/Typography';
 import Stack from '@mui/joy/Stack';
@@ -52,6 +52,7 @@ function ColorSchemeToggle(props: IconButtonProps) {
 }
 
 export default function Registration() {
+  const navigate = useNavigate()
   const handleSubmit = async (event: React.FormEvent<SignUpFormElement>) => {
     event.preventDefault();
     const formElements = event.currentTarget.elements;
@@ -76,6 +77,8 @@ export default function Registration() {
 
       if (response.status === 201) {
         console.log('User registered successfully!');
+        navigate('/login')
+
       } else {
         console.log('Registration failed!');
       }
@@ -188,7 +191,7 @@ export default function Registration() {
                     }}
                   >
                     <Checkbox size="sm" label="Remember me" name="persistent" />
-                    <Link level="title-sm" href="#replace-with-a-link">
+                    <Link to="/login">
                       Have an account?
                     </Link>
                   </Box>

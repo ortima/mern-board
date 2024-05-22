@@ -12,8 +12,11 @@ import PersonAdd from '@mui/icons-material/PersonAdd';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import { AppBar } from '@mui/material';
+import { useNavigate } from 'react-router';
 
 export default function AccountMenu() {
+  const navigate = useNavigate()
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -22,6 +25,12 @@ export default function AccountMenu() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+
+  const handleLogout = () => {
+    navigate('/login')
+    handleClose()
+  }
   return (
     <AppBar sx={{ position: 'sticky', padding: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center', justifyContent: 'right' }}>
@@ -94,7 +103,7 @@ export default function AccountMenu() {
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>

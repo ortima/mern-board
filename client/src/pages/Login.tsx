@@ -14,8 +14,9 @@ import Stack from '@mui/joy/Stack';
 import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../context/authContext';
 
 interface FormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
@@ -23,7 +24,7 @@ interface FormElements extends HTMLFormControlsCollection {
   confirmPassword: HTMLInputElement;
   persistent: HTMLInputElement;
 }
-interface SignUpFormElement extends HTMLFormElement {
+interface SignInFormElement extends HTMLFormElement {
   readonly elements: FormElements;
 }
 
@@ -52,30 +53,28 @@ function ColorSchemeToggle(props: IconButtonProps) {
 }
 
 export default function Login() {
-  const handleSubmit = async (event: React.FormEvent<SignUpFormElement>) => {
+  const auth = useAuth()
+  const navigate = useNavigate()
+  const handleSubmit = async (event: React.FormEvent<SignInFormElement>) => {
     event.preventDefault();
     const formElements = event.currentTarget.elements;
     const data = {
       email: formElements.email.value,
       password: formElements.password.value,
-      confirmPassword: formElements.confirmPassword.value,
       persistent: formElements.persistent.checked,
     };
 
-    if (data.password !== data.confirmPassword) {
-      alert('Passwords do not match!');
-      return;
-    }
-
     try {
-      const response = await axios.post('/api/auth/registration', {
+      const response = await axios.post('/api/auth/login', {
         email: data.email,
         password: data.password,
         persistent: data.persistent,
       })
 
-      if (response.status === 201) {
-        console.log('User registered successfully!');
+      if (response.status === 200) {
+        console.log('User login successfully!');
+        auth.login(response.data.token, response.data.userId)
+        navigate('/dashboard');
       } else {
         console.log('Registration failed!');
       }
@@ -187,7 +186,7 @@ export default function Login() {
                   >
                     <Checkbox size="sm" label="Remember me" name="persistent" />
                     <Link to="/registration">
-                      Forget a password?
+                      Have an account?
                     </Link>
                   </Box>
                   <Button type="submit" fullWidth>
