@@ -10,10 +10,10 @@ import Stack from '@mui/joy/Stack';
 import Select from '@mui/joy/Select';
 import Option from '@mui/joy/Option';
 import Add from '@mui/icons-material/Add';
+import axios from 'axios';
 
 interface FormElements extends HTMLFormControlsCollection {
-  name: HTMLInputElement;
-  type: HTMLSelectElement;
+  type: HTMLSelectElement | HTMLInputElement | any;
   category: HTMLSelectElement;
   description: HTMLInputElement;
   amount: HTMLInputElement
@@ -23,22 +23,41 @@ interface Form extends HTMLFormElement {
   readonly elements: FormElements;
 }
 
-function submitHandler(event: React.FormEvent<Form>) {
+async function submitHandler(event: React.FormEvent<Form>) {
   event.preventDefault()
+  const userDataString = localStorage.getItem('userData');
+  const userData = userDataString ? JSON.parse(userDataString) : null;
+  const userId = userData ? userData.userId : null;
 
-  const formElements = event.currentTarget.elements
-  const data = {
-    name: formElements.name.value,
-    type: formElements.type.value,
-    category: formElements.category.value,
-    description: formElements.description.value,
-    amount: formElements.amount.value
-  };
+
+  if (!userId) {
+    console.error('userId not found in localStorage');
+    return
+  }
+
+  const formData = new FormData(event.currentTarget);
+  const formJson = Object.fromEntries((formData as any).entries());
+  const data = { ...formJson, userId };
+
   console.log(data)
+
+  try {
+    const response = await axios.post('/api/transactions', data, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    console.log(response)
+  }
+  catch (error) {
+    console.log(error, 'Error')
+  }
 
 }
 
 export default function BasicModalDialog() {
+
+
   const [open, setOpen] = React.useState<boolean>(false);
   return (
     <React.Fragment>
@@ -58,13 +77,9 @@ export default function BasicModalDialog() {
           >
             <Stack spacing={2}>
               <FormControl>
-                <FormLabel>Name</FormLabel>
-                <Input autoFocus required name='name' />
-              </FormControl>
-              <FormControl>
                 <FormLabel>Type</FormLabel>
-                <Select defaultValue="expenses" name='type'>
-                  <Option value="expenses">Расходы</Option>
+                <Select defaultValue="expense" name='type'>
+                  <Option value="expense">Расходы</Option>
                   <Option value="income">Доходы</Option>
                 </Select>
               </FormControl>

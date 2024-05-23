@@ -21,17 +21,16 @@ import Typography from '@mui/joy/Typography';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import axios from 'axios';
 
-const rows = [
-  {
-    id: '1',
-    type: 'Расходы',
-    category: 'Школа',
-    description: 'desc',
-    amount: '500',
-    status: 'Done'
-  }
-];
+interface Transaction {
+  transactionId: string;
+  type: string;
+  category: string;
+  description: string;
+  amount: string;
+  createdAt: string;
+};
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -72,6 +71,25 @@ export default function OrderTable() {
   const [order, setOrder] = React.useState<Order>('desc');
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [open, setOpen] = React.useState(false);
+
+  const [transactions, setTransactions] = React.useState<Transaction[]>([]);
+
+
+  React.useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+
+  const fetchTransactions = async () => {
+    try {
+      const response = await axios.get('/api/transactions');
+      setTransactions(response.data);
+      console.log(response.data)
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    }
+  };
+
   const renderFilters = () => (
     <React.Fragment>
       <FormControl size="sm">
@@ -187,16 +205,16 @@ export default function OrderTable() {
                 <Checkbox
                   size="sm"
                   indeterminate={
-                    selected.length > 0 && selected.length !== rows.length
+                    selected.length > 0 && selected.length !== transactions.length
                   }
-                  checked={selected.length === rows.length}
+                  checked={selected.length === transactions.length}
                   onChange={(event) => {
                     setSelected(
-                      event.target.checked ? rows.map((row) => row.id) : [],
+                      event.target.checked ? transactions.map((transaction) => transaction.transactionId) : [],
                     );
                   }}
                   color={
-                    selected.length > 0 || selected.length === rows.length
+                    selected.length > 0 || selected.length === transactions.length
                       ? 'primary'
                       : undefined
                   }
@@ -225,22 +243,22 @@ export default function OrderTable() {
               <th style={{ width: 140, padding: '12px 6px' }}>Category</th>
               <th style={{ width: 140, padding: '12px 6px' }}>Description</th>
               <th style={{ width: 240, padding: '12px 6px' }}>Amout</th>
-              <th style={{ width: 240, padding: '12px 6px' }}>Status</th>
+              <th style={{ width: 240, padding: '12px 6px' }}>Date</th>
             </tr>
           </thead>
           <tbody>
-            {stableSort(rows, getComparator(order, 'id')).map((row) => (
-              <tr key={row.id}>
+            {stableSort(transactions, getComparator(order, 'transactionId')).map((transaction) => (
+              <tr key={transaction.transactionId}>
                 <td style={{ textAlign: 'center', width: 120 }}>
                   <Checkbox
                     size="sm"
-                    checked={selected.includes(row.id)}
-                    color={selected.includes(row.id) ? 'primary' : undefined}
+                    checked={selected.includes(transaction.transactionId)}
+                    color={selected.includes(transaction.transactionId) ? 'primary' : undefined}
                     onChange={(event) => {
                       setSelected((ids) =>
                         event.target.checked
-                          ? ids.concat(row.id)
-                          : ids.filter((itemId) => itemId !== row.id),
+                          ? ids.concat(transaction.transactionId)
+                          : ids.filter((itemId) => itemId !== transaction.transactionId),
                       );
                     }}
                     slotProps={{ checkbox: { sx: { textAlign: 'left' } } }}
@@ -248,19 +266,19 @@ export default function OrderTable() {
                   />
                 </td>
                 <td>
-                  <Typography level="body-xs">{row.type}</Typography>
+                  <Typography level="body-xs">{transaction.type}</Typography>
                 </td>
                 <td>
-                  <Typography level="body-xs">{row.category}</Typography>
+                  <Typography level="body-xs">{transaction.category}</Typography>
                 </td>
                 <td>
-                  <Typography level="body-xs">{row.description}</Typography>
+                  <Typography level="body-xs">{transaction.description}</Typography>
                 </td>
                 <td>
-                  <Typography level="body-xs">{row.amount}</Typography>
+                  <Typography level="body-xs">{transaction.amount}</Typography>
                 </td>
                 <td>
-                  <Typography level="body-xs">{row.status}</Typography>
+                  <Typography level="body-xs">{transaction.createdAt}</Typography>
                 </td>
               </tr>
             ))}
