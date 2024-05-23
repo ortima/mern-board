@@ -1,6 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
+const transactionRoutes = require('./routes/transaction.route')
 
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -15,6 +16,7 @@ const corsOptions = {
 app.use(cors(corsOptions))
 
 app.use('/api/auth', require('./routes/auth.route'))
+app.use('/api', transactionRoutes)
 
 const start = async () => {
   try {
