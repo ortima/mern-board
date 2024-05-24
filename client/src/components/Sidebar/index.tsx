@@ -16,7 +16,6 @@ import BrightnessAutoRoundedIcon from '@mui/icons-material/BrightnessAutoRounded
 
 import ColorSchemeToggle from '../../utils/toggleTheme';
 import { closeSidebar } from '../../utils/toggleSidebar';
-import { useAuth } from '../../context/authContext';
 
 function Toggler({
   defaultExpanded = false,
@@ -51,7 +50,6 @@ function Toggler({
 }
 
 export default function Sidebar() {
-  const auth = useAuth()
   return (
     <Sheet
       className="Sidebar"
@@ -161,9 +159,9 @@ export default function Sidebar() {
         />
         <Box sx={{ minWidth: 0, flex: 1 }}>
           <Typography level="title-sm">Siriwat K.</Typography>
-          <Typography level="body-xs">{auth.userData?.email}</Typography>
+          <Typography level="body-xs">email</Typography>
         </Box>
-        <IconButton size="sm" variant="plain" color="neutral" onClick={() => (auth.logout())}>
+        <IconButton size="sm" variant="plain" color="neutral">
           <LogoutRoundedIcon />
         </IconButton>
       </Box>

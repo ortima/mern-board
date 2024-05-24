@@ -15,7 +15,8 @@ import Stack from '@mui/joy/Stack';
 import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
-import axios from 'axios';
+import { registerUser } from '../store/authSlice';
+import { useAppDispatch } from '../store';
 
 interface FormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
@@ -52,7 +53,10 @@ function ColorSchemeToggle(props: IconButtonProps) {
 }
 
 export default function Registration() {
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
+
+
   const handleSubmit = async (event: React.FormEvent<SignUpFormElement>) => {
     event.preventDefault();
     const formElements = event.currentTarget.elements;
@@ -68,28 +72,14 @@ export default function Registration() {
       return;
     }
 
+
     try {
-      const response = await axios.post('/api/auth/registration', {
-        email: data.email,
-        password: data.password,
-        persistent: data.persistent,
-      })
-
-      if (response.status === 201) {
-        console.log('User registered successfully!');
-        navigate('/login')
-
-      } else {
-        console.log('Registration failed!');
-      }
-    } catch (error: any) {
-      if (error.response) {
-        alert(error.response.data.message);
-      } else if (error.request) {
-        console.error('Request error:', error.request);
-      } else {
-        console.error('Error:', error.message);
-      }
+      await dispatch(registerUser({ email: data.email, password: data.password }));
+      console.log('User registered successfully!');
+      navigate('/login');
+    } catch (error) {
+      console.error('Error registering user:', error);
+      alert('Registration failed!');
     }
   };
 

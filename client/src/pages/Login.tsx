@@ -15,8 +15,8 @@ import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { useAuth } from '../context/authContext';
+import { loginUser } from '../store/authSlice';
+import { useAppDispatch } from '../store';
 
 interface FormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
@@ -53,8 +53,9 @@ function ColorSchemeToggle(props: IconButtonProps) {
 }
 
 export default function Login() {
-  const auth = useAuth()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
+
   const handleSubmit = async (event: React.FormEvent<SignInFormElement>) => {
     event.preventDefault();
     const formElements = event.currentTarget.elements;
@@ -65,28 +66,18 @@ export default function Login() {
     };
 
     try {
-      const response = await axios.post('/api/auth/login', {
-        email: data.email,
-        password: data.password,
-        persistent: data.persistent,
-      })
+      const response = await dispatch(loginUser({ email: data.email, password: data.password }));
 
-      if (response.status === 200) {
-        console.log('User login successfully!');
-        auth.login(response.data.token, response.data.userId, response.data.email)
-        console.log(response.data.email)
+      // Проверяем, был ли успешным вход
+      if (response.meta.requestStatus === 'fulfilled') {
+        console.log('User logged in successfully!');
         navigate('/dashboard');
       } else {
-        console.log('Registration failed!');
+        console.log('Login failed!');
       }
-    } catch (error: any) {
-      if (error.response) {
-        alert(error.response.data.message);
-      } else if (error.request) {
-        console.error('Request error:', error.request);
-      } else {
-        console.error('Error:', error.message);
-      }
+    } catch (error) {
+      console.error('Error logging in:', error);
+      alert('Login failed!');
     }
   };
 

@@ -1,15 +1,17 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../context/authContext';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
 
 const PrivateRoute: React.FC = () => {
-  const auth = useAuth();
+  const userData = useSelector((state: RootState) => state.auth.userData)
+  console.log(userData)
 
-  if (auth.loading) {
-    return <div>Loading...</div>
+  if (!userData) {
+    return <Navigate to="/login" />;
   }
 
-  return auth.userData?.token ? <Outlet /> : <Navigate to="/login" />;
+  return <Outlet />;
 };
 
 export default PrivateRoute;
