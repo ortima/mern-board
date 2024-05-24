@@ -1,7 +1,7 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import axios from 'axios';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export interface Transaction {
+interface Transaction {
   transactionId: string;
   type: string;
   category: string;
@@ -22,25 +22,43 @@ const initialState: TransactionsState = {
   error: null,
 };
 
+const getAuthToken = () => {
+  const userDataString = localStorage.getItem('userData');
+  if (userDataString) {
+    const userData = JSON.parse(userDataString);
+    return userData.token;
+  }
+  return null;
+};
+
 export const fetchTransactions = createAsyncThunk('transactions/fetchTransactions', async () => {
-  const response = await axios.get('/api/transactions');
+  const token = getAuthToken();
+  const response = await axios.get('/api/transactions', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response.data;
 });
 
 export const addTransaction = createAsyncThunk('transactions/addTransaction', async (transaction: Omit<Transaction, 'transactionId'>) => {
+  const token = getAuthToken();
   const response = await axios.post('/api/transactions', transaction, {
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
     },
   });
   return response.data;
 });
 
 export const removeTransactions = createAsyncThunk('transactions/removeTransactions', async (transactionIds: string[]) => {
+  const token = getAuthToken();
   const response = await axios.delete('/api/transactions', {
     data: { transactionIds },
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
     },
   });
   return transactionIds;
@@ -83,8 +101,8 @@ const transactionsSlice = createSlice({
       .addCase(removeTransactions.fulfilled, (state, action: PayloadAction<string[]>) => {
         state.transactions = state.transactions.filter(
           (transaction) => !action.payload.includes(transaction.transactionId)
-        )
-      })
+        );
+      });
   },
 });
 

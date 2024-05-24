@@ -16,6 +16,8 @@ import BrightnessAutoRoundedIcon from '@mui/icons-material/BrightnessAutoRounded
 
 import ColorSchemeToggle from '../../utils/toggleTheme';
 import { closeSidebar } from '../../utils/toggleSidebar';
+import { logoutUser } from '../../store/authSlice';
+import { useAppDispatch } from '../../store';
 
 function Toggler({
   defaultExpanded = false,
@@ -50,6 +52,11 @@ function Toggler({
 }
 
 export default function Sidebar() {
+
+  const dispacth = useAppDispatch()
+  const handleLogout = () => {
+    dispacth(logoutUser())
+  }
   return (
     <Sheet
       className="Sidebar"
@@ -161,7 +168,7 @@ export default function Sidebar() {
           <Typography level="title-sm">Siriwat K.</Typography>
           <Typography level="body-xs">email</Typography>
         </Box>
-        <IconButton size="sm" variant="plain" color="neutral">
+        <IconButton size="sm" variant="plain" color="neutral" onClick={handleLogout}>
           <LogoutRoundedIcon />
         </IconButton>
       </Box>
