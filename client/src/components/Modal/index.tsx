@@ -10,7 +10,9 @@ import Stack from '@mui/joy/Stack';
 import Select from '@mui/joy/Select';
 import Option from '@mui/joy/Option';
 import Add from '@mui/icons-material/Add';
-import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { addTransaction } from '../../store/transactionSlice';
+import { AppDispatch } from '../../store';
 
 interface FormElements extends HTMLFormControlsCollection {
   type: HTMLSelectElement | HTMLInputElement | any;
@@ -23,42 +25,49 @@ interface Form extends HTMLFormElement {
   readonly elements: FormElements;
 }
 
-async function submitHandler(event: React.FormEvent<Form>) {
-  event.preventDefault()
-  const userDataString = localStorage.getItem('userData');
-  const userData = userDataString ? JSON.parse(userDataString) : null;
-  const userId = userData ? userData.userId : null;
 
-
-  if (!userId) {
-    console.error('userId not found in localStorage');
-    return
-  }
-
-  const formData = new FormData(event.currentTarget);
-  const formJson = Object.fromEntries((formData as any).entries());
-  const data = { ...formJson, userId };
-
-  console.log(data)
-
-  try {
-    const response = await axios.post('/api/transactions', data, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    console.log(response)
-  }
-  catch (error) {
-    console.log(error, 'Error')
-  }
-
-}
 
 export default function BasicModalDialog() {
-
-
+  const dispatch: AppDispatch = useDispatch();
   const [open, setOpen] = React.useState<boolean>(false);
+
+  async function submitHandler(event: React.FormEvent<Form>) {
+    event.preventDefault()
+    const userDataString = localStorage.getItem('userData');
+    const userData = userDataString ? JSON.parse(userDataString) : null;
+    const userId = userData ? userData.userId : null;
+
+
+    if (!userId) {
+      console.error('userId not found in localStorage');
+      return
+    }
+
+    const formData = new FormData(event.currentTarget);
+    const formJson = Object.fromEntries((formData as any).entries());
+    const data: any = {
+      userId: userId,
+      type: formJson.type,
+      category: formJson.category,
+      description: formJson.description,
+      amount: formJson.amount,
+    };
+
+
+    console.log(data)
+
+    try {
+      const response = await dispatch(addTransaction(data))
+      if (response.meta.requestStatus === 'fulfilled') {
+        setOpen(false);
+      } else {
+        console.error('Failed to add transaction');
+      }
+    } catch (error) {
+      console.error(error, 'Error');
+    }
+
+  }
   return (
     <React.Fragment>
       <Button

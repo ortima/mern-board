@@ -7,5 +7,6 @@ router.get('/transactions', transactionController.getAllTransactions)
 router.get('/transactions/:id', transactionController.getTransactionById)
 router.put('/transactions/:id', transactionController.updateTransaction)
 router.delete('/transactions/:id', transactionController.deleteTransaction)
+router.delete('/transactions', transactionController.deleteTransactions)
 
 module.exports = router

@@ -60,3 +60,23 @@ exports.deleteTransaction = async (req, res) => {
     res.status(400).json({ error: error.message })
   }
 }
+exports.deleteTransactions = async (req, res) => {
+  try {
+    const { transactionIds } = req.body
+    if (!Array.isArray(transactionIds)) {
+      return res.status(400).json({ error: 'transactionIds must be an array' })
+    }
+
+    const result = await Transaction.deleteMany({
+      transactionId: { $in: transactionIds },
+    })
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'Transactions not found' })
+    }
+
+    res.status(200).json({ message: 'Transactions deleted successfully' })
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+}

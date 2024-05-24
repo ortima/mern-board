@@ -5,7 +5,6 @@ import Button from '@mui/joy/Button';
 import Divider from '@mui/joy/Divider';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
-import Link from '@mui/joy/Link';
 import Input from '@mui/joy/Input';
 import Modal from '@mui/joy/Modal';
 import ModalDialog from '@mui/joy/ModalDialog';
@@ -20,73 +19,35 @@ import Typography from '@mui/joy/Typography';
 
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import SearchIcon from '@mui/icons-material/Search';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import axios from 'axios';
 
-interface Transaction {
-  transactionId: string;
-  type: string;
-  category: string;
-  description: string;
-  amount: string;
-  createdAt: string;
-};
+import { useSelector } from 'react-redux';
+import { RootState, useAppDispatch } from '../../store/index';
 
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
+import { fetchTransactions, removeTransactions } from '../../store/transactionSlice';
 
-type Order = 'asc' | 'desc';
-
-function getComparator<Key extends keyof any>(
-  order: Order,
-  orderBy: Key,
-): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string },
-) => number {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
-  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
 
 export default function OrderTable() {
-  const [order, setOrder] = React.useState<Order>('desc');
-  const [selected, setSelected] = React.useState<readonly string[]>([]);
+  const dispatch = useAppDispatch()
+  const transactions = useSelector((state: RootState) => state.transactions.transactions)
+  const loading = useSelector((state: RootState) => state.transactions.loading);
+  const error = useSelector((state: RootState) => state.transactions.error);
+
+  const [selected, setSelected] = React.useState<string[]>([]);
   const [open, setOpen] = React.useState(false);
 
-  const [transactions, setTransactions] = React.useState<Transaction[]>([]);
 
 
   React.useEffect(() => {
-    fetchTransactions();
-  }, []);
+    dispatch(fetchTransactions());
+  }, [dispatch]);
 
-
-  const fetchTransactions = async () => {
+  const handleDeleteSelected = async () => {
     try {
-      const response = await axios.get('/api/transactions');
-      setTransactions(response.data);
-      console.log(response.data)
+      await dispatch(removeTransactions(selected));
+      setSelected([]);
+      console.log(transactions)
     } catch (error) {
-      console.error('Error fetching transactions:', error);
+      console.error('Failed to delete transactions', error);
     }
   };
 
@@ -96,10 +57,9 @@ export default function OrderTable() {
         <FormLabel>Status</FormLabel>
         <Select
           size="sm"
-          placeholder="Filter by status"
+          placeholder="Filter by category"
           slotProps={{ button: { sx: { whiteSpace: 'nowrap' } } }}
         >
-          <Option value="paid">Paid</Option>
           <Option value="pending">Pending</Option>
           <Option value="refunded">Refunded</Option>
           <Option value="cancelled">Cancelled</Option>
@@ -109,9 +69,9 @@ export default function OrderTable() {
         <FormLabel>Category</FormLabel>
         <Select size="sm" placeholder="All">
           <Option value="all">All</Option>
-          <Option value="refund">Refund</Option>
-          <Option value="purchase">Purchase</Option>
-          <Option value="debit">Debit</Option>
+          <Option value="school">School</Option>
+          <Option value="work">Work</Option>
+          <Option value="university">University</Option>
         </Select>
       </FormControl>
     </React.Fragment>
@@ -221,33 +181,15 @@ export default function OrderTable() {
                   sx={{ verticalAlign: 'text-bottom' }}
                 />
               </th>
-              <th style={{ width: 120, padding: '12px 6px' }}>
-                <Link
-                  underline="none"
-                  color="primary"
-                  component="button"
-                  onClick={() => setOrder(order === 'asc' ? 'desc' : 'asc')}
-                  fontWeight="lg"
-                  endDecorator={<ArrowDropDownIcon />}
-                  sx={{
-                    '& svg': {
-                      transition: '0.2s',
-                      transform:
-                        order === 'desc' ? 'rotate(0deg)' : 'rotate(180deg)',
-                    },
-                  }}
-                >
-                  Type
-                </Link>
-              </th>
-              <th style={{ width: 140, padding: '12px 6px' }}>Category</th>
-              <th style={{ width: 140, padding: '12px 6px' }}>Description</th>
-              <th style={{ width: 240, padding: '12px 6px' }}>Amout</th>
-              <th style={{ width: 240, padding: '12px 6px' }}>Date</th>
+              <th style={{ width: 120, padding: '12px 6px' }}>Date</th>
+              <th style={{ width: 120, padding: '12px 6px' }}>Type</th>
+              <th style={{ width: 120, padding: '12px 6px' }}>Category</th>
+              <th style={{ width: 360, padding: '12px 6px' }}>Description</th>
+              <th style={{ width: 120, padding: '12px 6px' }}>Amount</th>
             </tr>
           </thead>
           <tbody>
-            {stableSort(transactions, getComparator(order, 'transactionId')).map((transaction) => (
+            {transactions.map((transaction) => (
               <tr key={transaction.transactionId}>
                 <td style={{ textAlign: 'center', width: 120 }}>
                   <Checkbox
@@ -266,6 +208,9 @@ export default function OrderTable() {
                   />
                 </td>
                 <td>
+                  <Typography level="body-xs">{new Date(transaction.createdAt).toLocaleDateString()}</Typography>
+                </td>
+                <td>
                   <Typography level="body-xs">{transaction.type}</Typography>
                 </td>
                 <td>
@@ -277,14 +222,21 @@ export default function OrderTable() {
                 <td>
                   <Typography level="body-xs">{transaction.amount}</Typography>
                 </td>
-                <td>
-                  <Typography level="body-xs">{transaction.createdAt}</Typography>
-                </td>
               </tr>
             ))}
           </tbody>
         </Table>
       </Sheet>
+      <Box mt={4}>
+        <Button
+          variant="outlined"
+          color="neutral"
+          onClick={handleDeleteSelected}
+          disabled={selected.length === 0}
+        >
+          Remove item
+        </Button>
+      </Box>
     </React.Fragment>
   );
 }
