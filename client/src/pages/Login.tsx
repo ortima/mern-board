@@ -178,7 +178,7 @@ export default function Login() {
                   >
                     <Checkbox size="sm" label="Remember me" name="persistent" />
                     <Link to="/registration">
-                      Have an account?
+                      Dont have an account?
                     </Link>
                   </Box>
                   <Button type="submit" fullWidth>

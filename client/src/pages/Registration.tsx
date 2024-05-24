@@ -19,6 +19,7 @@ import { registerUser } from '../store/authSlice';
 import { useAppDispatch } from '../store';
 
 interface FormElements extends HTMLFormControlsCollection {
+  name: HTMLInputElement
   email: HTMLInputElement;
   password: HTMLInputElement;
   confirmPassword: HTMLInputElement;
@@ -61,6 +62,7 @@ export default function Registration() {
     event.preventDefault();
     const formElements = event.currentTarget.elements;
     const data = {
+      name: formElements.name.value,
       email: formElements.email.value,
       password: formElements.password.value,
       confirmPassword: formElements.confirmPassword.value,
@@ -74,7 +76,7 @@ export default function Registration() {
 
 
     try {
-      await dispatch(registerUser({ email: data.email, password: data.password }));
+      await dispatch(registerUser({ name: data.name, email: data.email, password: data.password }));
       console.log('User registered successfully!');
       navigate('/login');
     } catch (error) {
@@ -160,6 +162,10 @@ export default function Registration() {
           >
             <Stack gap={4} sx={{ mt: 2 }}>
               <form onSubmit={handleSubmit}>
+                <FormControl required>
+                  <FormLabel>Name</FormLabel>
+                  <Input type="text" name="name" />
+                </FormControl>
                 <FormControl required>
                   <FormLabel>Email</FormLabel>
                   <Input type="text" name="email" />

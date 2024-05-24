@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
 exports.validateRegistrationData = [
+  check('name', 'Incorrect name').isString(),
   check('email', 'Incorrect email').isEmail(),
   check('password', 'Incorrect password').isLength({ min: 6 }),
 ]
@@ -22,7 +23,7 @@ exports.createUser = async (req, res) => {
         .status(400)
         .json({ errors: errors.array(), message: 'Incorrect data' })
     }
-    const { email, password } = req.body
+    const { name, email, password } = req.body
 
     const isUsed = await User.findOne({ email })
 
@@ -32,6 +33,7 @@ exports.createUser = async (req, res) => {
       return res.status(400).json({ message: 'Email is not available!' })
     }
     const user = new User({
+      name,
       email,
       password: hashedPassword,
     })
@@ -71,7 +73,7 @@ exports.loginUser = async (req, res) => {
     const token = jwt.sign({ userId: user.id }, SECRET_KEY_JWT, {
       expiresIn: '12h',
     })
-    res.json({ token, userId: user.id, email: user.email })
+    res.json({ token, userId: user.id, email: user.email, name: user.name })
   } catch (e) {
     res.status(500).json({ message: 'Server error' })
   }

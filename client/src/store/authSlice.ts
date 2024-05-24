@@ -5,6 +5,7 @@ interface UserData {
   token: string;
   userId: string;
   email?: string;
+  name?: string;
 }
 
 interface AuthState {
@@ -27,10 +28,11 @@ const initialState: AuthState = {
 
 export const registerUser = createAsyncThunk(
   'auth/registerUser',
-  async (userData: { email: string; password: string }) => {
+  async (userData: { name: string; email: string; password: string }) => {
     try {
       const response = await axios.post('/api/registration', userData);
       return response.data;
+
     } catch (error) {
       console.error('Error registering user:', error);
       throw error;
@@ -42,10 +44,11 @@ export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async (userData: { email: string; password: string }, { dispatch }) => {
     try {
-      const response = await axios.post('/api/login', userData);
-      const { token, userId, email } = response.data;
-      localStorage.setItem('userData', JSON.stringify({ token, userId, email }));
-      dispatch(login({ token, userId, email }));
+      const response = await axios.post('/api/login', userData)
+      const { token, userId, email, name } = response.data
+      localStorage.setItem('userData', JSON.stringify({ token, userId, email }))
+      dispatch(login({ token, userId, email, name }))
+      return { token, userId, email, name }
     } catch (error) {
       console.error('Error logging in:', error);
       throw error;
@@ -79,6 +82,7 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(loginUser.fulfilled, (state, action) => {
       console.log('User logged in successfully');
+      state.userData = action.payload;
     })
   }
 })
