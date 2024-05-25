@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface Transaction {
+export interface Transaction {
   transactionId: string;
   type: string;
   category: string;
@@ -44,6 +44,17 @@ export const fetchTransactions = createAsyncThunk('transactions/fetchTransaction
 export const addTransaction = createAsyncThunk('transactions/addTransaction', async (transaction: Omit<Transaction, 'transactionId'>) => {
   const token = getAuthToken();
   const response = await axios.post('/api/transactions', transaction, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+});
+
+export const updateTransactionAsync = createAsyncThunk('transactions/updateTransaction', async (transaction: Transaction) => {
+  const token = getAuthToken();
+  const response = await axios.put(`/api/transactions/${transaction.transactionId}`, transaction, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
@@ -102,6 +113,15 @@ const transactionsSlice = createSlice({
         state.transactions = state.transactions.filter(
           (transaction) => !action.payload.includes(transaction.transactionId)
         );
+      })
+      .addCase(updateTransactionAsync.fulfilled, (state, action: PayloadAction<Transaction>) => {
+        const index = state.transactions.findIndex(transaction => transaction.transactionId === action.payload.transactionId);
+        if (index !== -1) {
+          state.transactions[index] = action.payload;
+        }
+      })
+      .addCase(updateTransactionAsync.rejected, (state, action) => {
+        state.error = action.error.message || 'Failed to update transaction';
       });
   },
 });

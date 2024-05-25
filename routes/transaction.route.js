@@ -23,11 +23,11 @@ router.put(
   authMiddleware,
   transactionController.updateTransaction
 )
-router.delete(
-  '/transactions/:id',
-  authMiddleware,
-  transactionController.deleteTransaction
-)
+// router.delete(
+//   '/transactions/:id',
+//   authMiddleware,
+//   transactionController.deleteTransaction
+// )
 router.delete(
   '/transactions',
   authMiddleware,

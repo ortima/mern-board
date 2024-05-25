@@ -24,6 +24,7 @@ import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../../store/index';
 
 import { fetchTransactions, removeTransactions } from '../../store/transactionSlice';
+import ChangeModal from '../Modal/changeTransaction';
 
 
 export default function OrderTable() {
@@ -34,8 +35,6 @@ export default function OrderTable() {
 
   const [selected, setSelected] = React.useState<string[]>([]);
   const [open, setOpen] = React.useState(false);
-
-
 
   React.useEffect(() => {
     dispatch(fetchTransactions());
@@ -186,6 +185,7 @@ export default function OrderTable() {
               <th style={{ width: 120, padding: '12px 6px' }}>Category</th>
               <th style={{ width: 360, padding: '12px 6px' }}>Description</th>
               <th style={{ width: 120, padding: '12px 6px' }}>Amount</th>
+              <th style={{ width: 50 }}></th>
             </tr>
           </thead>
           <tbody>
@@ -221,6 +221,9 @@ export default function OrderTable() {
                 </td>
                 <td>
                   <Typography level="body-xs">{transaction.amount}</Typography>
+                </td>
+                <td>
+                  <ChangeModal transactionToEdit={transaction} />
                 </td>
               </tr>
             ))}
