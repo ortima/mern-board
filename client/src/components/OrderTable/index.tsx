@@ -26,12 +26,17 @@ import { RootState, useAppDispatch } from '../../store/index';
 import { fetchTransactions, removeTransactions } from '../../store/transactionSlice';
 import ChangeModal from '../Modal/changeTransaction';
 import TableSkeleton from '../Skeleton';
+import { Snackbar } from '@mui/joy';
 
 
 export default function OrderTable() {
   const dispatch = useAppDispatch()
   const transactions = useSelector((state: RootState) => state.transactions.transactions)
   const loading = useSelector((state: RootState) => state.transactions.loading);
+
+  const [openSnack, setOpenSnack] = React.useState(false);
+  const [deletedCount, setDeletedCount] = React.useState(0);
+
 
   const [selected, setSelected] = React.useState<string[]>([]);
   const [open, setOpen] = React.useState(false);
@@ -43,8 +48,9 @@ export default function OrderTable() {
   const handleDeleteSelected = async () => {
     try {
       await dispatch(removeTransactions(selected));
+      setDeletedCount(selected.length)
       setSelected([]);
-      console.log(transactions)
+      setOpenSnack(true)
     } catch (error) {
       console.error('Failed to delete transactions', error);
     }
@@ -241,6 +247,14 @@ export default function OrderTable() {
         >
           Remove item
         </Button>
+        <Snackbar
+          autoHideDuration={2000}
+          onClose={() => setOpenSnack(false)}
+          open={openSnack}
+          color='danger'
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+          {deletedCount > 1 ? `Deleted ${deletedCount} items` : `Deleted item`}
+        </Snackbar>
       </Box>
     </React.Fragment>
   );
