@@ -68,7 +68,6 @@ export default function Login() {
     try {
       const response = await dispatch(loginUser({ email: data.email, password: data.password }));
 
-      // Проверяем, был ли успешным вход
       if (response.meta.requestStatus === 'fulfilled') {
         console.log('User logged in successfully!');
         navigate('/dashboard');

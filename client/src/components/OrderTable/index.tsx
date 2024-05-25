@@ -25,13 +25,13 @@ import { RootState, useAppDispatch } from '../../store/index';
 
 import { fetchTransactions, removeTransactions } from '../../store/transactionSlice';
 import ChangeModal from '../Modal/changeTransaction';
+import TableSkeleton from '../Skeleton';
 
 
 export default function OrderTable() {
   const dispatch = useAppDispatch()
   const transactions = useSelector((state: RootState) => state.transactions.transactions)
   const loading = useSelector((state: RootState) => state.transactions.loading);
-  const error = useSelector((state: RootState) => state.transactions.error);
 
   const [selected, setSelected] = React.useState<string[]>([]);
   const [open, setOpen] = React.useState(false);
@@ -183,50 +183,52 @@ export default function OrderTable() {
               <th style={{ width: 120, padding: '12px 6px' }}>Date</th>
               <th style={{ width: 120, padding: '12px 6px' }}>Type</th>
               <th style={{ width: 120, padding: '12px 6px' }}>Category</th>
-              <th style={{ width: 360, padding: '12px 6px' }}>Description</th>
+              <th style={{ width: 300, padding: '12px 6px', textAlign: "center" }}>Description</th>
               <th style={{ width: 120, padding: '12px 6px' }}>Amount</th>
               <th style={{ width: 50 }}></th>
             </tr>
           </thead>
           <tbody>
-            {transactions.map((transaction) => (
-              <tr key={transaction.transactionId}>
-                <td style={{ textAlign: 'center', width: 120 }}>
-                  <Checkbox
-                    size="sm"
-                    checked={selected.includes(transaction.transactionId)}
-                    color={selected.includes(transaction.transactionId) ? 'primary' : undefined}
-                    onChange={(event) => {
-                      setSelected((ids) =>
-                        event.target.checked
-                          ? ids.concat(transaction.transactionId)
-                          : ids.filter((itemId) => itemId !== transaction.transactionId),
-                      );
-                    }}
-                    slotProps={{ checkbox: { sx: { textAlign: 'left' } } }}
-                    sx={{ verticalAlign: 'text-bottom' }}
-                  />
-                </td>
-                <td>
-                  <Typography level="body-xs">{new Date(transaction.createdAt).toLocaleDateString()}</Typography>
-                </td>
-                <td>
-                  <Typography level="body-xs">{transaction.type}</Typography>
-                </td>
-                <td>
-                  <Typography level="body-xs">{transaction.category}</Typography>
-                </td>
-                <td>
-                  <Typography level="body-xs">{transaction.description}</Typography>
-                </td>
-                <td>
-                  <Typography level="body-xs">{transaction.amount}</Typography>
-                </td>
-                <td>
-                  <ChangeModal transactionToEdit={transaction} />
-                </td>
-              </tr>
-            ))}
+            {loading ? <TableSkeleton /> : (
+              transactions.map((transaction) => (
+                <tr key={transaction.transactionId}>
+                  <td style={{ textAlign: 'center', width: 120 }}>
+                    <Checkbox
+                      size="sm"
+                      checked={selected.includes(transaction.transactionId)}
+                      color={selected.includes(transaction.transactionId) ? 'primary' : undefined}
+                      onChange={(event) => {
+                        setSelected((ids) =>
+                          event.target.checked
+                            ? ids.concat(transaction.transactionId)
+                            : ids.filter((itemId) => itemId !== transaction.transactionId),
+                        );
+                      }}
+                      slotProps={{ checkbox: { sx: { textAlign: 'left' } } }}
+                      sx={{ verticalAlign: 'text-bottom' }}
+                    />
+                  </td>
+                  <td>
+                    <Typography level="body-xs">{new Date(transaction.createdAt).toLocaleDateString()}</Typography>
+                  </td>
+                  <td>
+                    <Typography level="body-xs">{transaction.type}</Typography>
+                  </td>
+                  <td>
+                    <Typography level="body-xs">{transaction.category}</Typography>
+                  </td>
+                  <td style={{ textAlign: 'center' }}>
+                    <Typography level="body-xs">{transaction.description}</Typography>
+                  </td>
+                  <td>
+                    <Typography level="body-xs">{transaction.amount}</Typography>
+                  </td>
+                  <td>
+                    <ChangeModal transactionToEdit={transaction} />
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </Table>
       </Sheet>
