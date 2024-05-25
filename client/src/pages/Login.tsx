@@ -17,6 +17,8 @@ import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginUser } from '../store/authSlice';
 import { useAppDispatch } from '../store';
+import Snackbar, { SnackbarProps } from '@mui/joy/Snackbar';
+
 
 interface FormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
@@ -55,6 +57,12 @@ function ColorSchemeToggle(props: IconButtonProps) {
 export default function Login() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const [open, setOpen] = React.useState(false)
+  const [snackbarInfo, setSnackbarInfo] = React.useState<{ message: string; color: SnackbarProps['color'] }>
+    ({
+      message: "text",
+      color: "neutral"
+    });
 
   const handleSubmit = async (event: React.FormEvent<SignInFormElement>) => {
     event.preventDefault();
@@ -69,16 +77,20 @@ export default function Login() {
       const response = await dispatch(loginUser({ email: data.email, password: data.password }));
 
       if (response.meta.requestStatus === 'fulfilled') {
-        console.log('User logged in successfully!');
-        navigate('/dashboard');
+        setOpen(true)
+        setSnackbarInfo({ message: 'Success! You log in', color: 'success' });
+        setTimeout(() => {
+          setOpen(false)
+          navigate('/dashboard')
+        }, 2000);
       } else {
-        console.log('Login failed!');
+        setOpen(true)
+        setSnackbarInfo({ message: "Incorrect emai or password", color: "danger" });
       }
     } catch (error) {
       console.error('Error logging in:', error);
-      alert('Login failed!');
     }
-  };
+  }
 
   return (
     <CssVarsProvider defaultMode="dark" disableTransitionOnChange>
@@ -130,6 +142,14 @@ export default function Login() {
               </IconButton>
               <Typography level="title-lg">FORTECH</Typography>
             </Box>
+            <Snackbar
+              autoHideDuration={2000}
+              onClose={() => setOpen(false)}
+              open={open}
+              color={snackbarInfo.color}
+              anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+              {snackbarInfo.message}
+            </Snackbar>
             <ColorSchemeToggle />
           </Box>
           <Box

@@ -84,6 +84,9 @@ const authSlice = createSlice({
       console.log('User logged in successfully');
       state.userData = action.payload;
     })
+    builder.addCase(loginUser.rejected, (state, action) => {
+      console.error('Error logging in:', action.error);
+    });
   }
 })
 

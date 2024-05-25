@@ -17,6 +17,7 @@ import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import { registerUser } from '../store/authSlice';
 import { useAppDispatch } from '../store';
+import { Snackbar, SnackbarProps } from '@mui/joy';
 
 interface FormElements extends HTMLFormControlsCollection {
   name: HTMLInputElement
@@ -56,6 +57,12 @@ function ColorSchemeToggle(props: IconButtonProps) {
 export default function Registration() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const [open, setOpen] = React.useState(false)
+  const [snackbarInfo, setSnackbarInfo] = React.useState<{ message: string; color: SnackbarProps['color'] }>
+    ({
+      message: "text",
+      color: "neutral"
+    });
 
 
   const handleSubmit = async (event: React.FormEvent<SignUpFormElement>) => {
@@ -70,18 +77,30 @@ export default function Registration() {
     };
 
     if (data.password !== data.confirmPassword) {
-      alert('Passwords do not match!');
+      setOpen(true)
+      setSnackbarInfo({ message: 'Password fields dont match!', color: "warning" });
       return;
     }
 
 
     try {
-      await dispatch(registerUser({ name: data.name, email: data.email, password: data.password }));
-      console.log('User registered successfully!');
-      navigate('/login');
+      const response = await dispatch(registerUser({ name: data.name, email: data.email, password: data.password }));
+
+      if (response.payload.errors) {
+        console.error('Server returned validation errors:', response.payload.errors);
+        return;
+      }
+
+      setSnackbarInfo({ message: 'User registered successfully!', color: 'success' });
+      setOpen(true);
+
+      setTimeout(() => {
+        setOpen(false);
+        navigate('/login');
+      }, 2000);
     } catch (error) {
-      console.error('Error registering user:', error);
-      alert('Registration failed!');
+      setOpen(true)
+      setSnackbarInfo({ message: "Incorrect data", color: "danger" });
     }
   };
 
@@ -98,13 +117,35 @@ export default function Registration() {
       />
       <Box
         sx={(theme) => ({
+          height: '100%',
+          position: 'fixed',
+          right: 0,
+          top: 0,
+          bottom: 0,
+          left: { xs: 0, md: '50vw' },
+          transition:
+            'background-image var(--Transition-duration), left var(--Transition-duration) !important',
+          transitionDelay: 'calc(var(--Transition-duration) + 0.1s)',
+          backgroundColor: 'background.level1',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundImage:
+            'url(https://images.unsplash.com/photo-1527181152855-fc03fc7949c8?auto=format&w=1000&dpr=2)',
+          [theme.getColorSchemeSelector('dark')]: {
+            backgroundImage:
+              'url(https://images.unsplash.com/photo-1572072393749-3ca9c8ea0831?auto=format&w=1000&dpr=2)',
+          },
+        })}
+      />
+      <Box
+        sx={(theme) => ({
           width: { xs: '100%', md: '50vw' },
           transition: 'width var(--Transition-duration)',
           transitionDelay: 'calc(var(--Transition-duration) + 0.1s)',
           position: 'relative',
           zIndex: 1,
           display: 'flex',
-          justifyContent: 'flex-end',
           backdropFilter: 'blur(12px)',
           backgroundColor: 'rgba(255 255 255 / 0.2)',
           [theme.getColorSchemeSelector('dark')]: {
@@ -135,7 +176,16 @@ export default function Registration() {
               </IconButton>
               <Typography level="title-lg">FORTECH</Typography>
             </Box>
+            <Snackbar
+              autoHideDuration={2000}
+              onClose={() => setOpen(false)}
+              open={open}
+              color={snackbarInfo.color}
+              anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+              {snackbarInfo.message}
+            </Snackbar>
             <ColorSchemeToggle />
+
           </Box>
           <Box
             component="main"
@@ -160,6 +210,8 @@ export default function Registration() {
               },
             }}
           >
+            <Typography textAlign={'center'} fontWeight={700} fontSize={'24px'}>Registration</Typography>
+
             <Stack gap={4} sx={{ mt: 2 }}>
               <form onSubmit={handleSubmit}>
                 <FormControl required>
@@ -205,29 +257,7 @@ export default function Registration() {
           </Box>
         </Box>
       </Box>
-      <Box
-        sx={(theme) => ({
-          height: '100%',
-          position: 'fixed',
-          right: 0,
-          top: 0,
-          bottom: 0,
-          left: { xs: 0, md: '50vw' },
-          transition:
-            'background-image var(--Transition-duration), left var(--Transition-duration) !important',
-          transitionDelay: 'calc(var(--Transition-duration) + 0.1s)',
-          backgroundColor: 'background.level1',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundImage:
-            'url(https://images.unsplash.com/photo-1527181152855-fc03fc7949c8?auto=format&w=1000&dpr=2)',
-          [theme.getColorSchemeSelector('dark')]: {
-            backgroundImage:
-              'url(https://images.unsplash.com/photo-1572072393749-3ca9c8ea0831?auto=format&w=1000&dpr=2)',
-          },
-        })}
-      />
+
     </CssVarsProvider>
   );
 }
