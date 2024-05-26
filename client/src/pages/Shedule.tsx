@@ -79,7 +79,6 @@ const Shedule = () => {
           <Typography level="h2" component="h1">
             Shedule
           </Typography>
-          {/* <BasicModalDialog /> */}
         </Box>
         <Pallete />
       </Box>

@@ -2,13 +2,8 @@
 import * as React from 'react';
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';
-import Divider from '@mui/joy/Divider';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
-import Input from '@mui/joy/Input';
-import Modal from '@mui/joy/Modal';
-import ModalDialog from '@mui/joy/ModalDialog';
-import ModalClose from '@mui/joy/ModalClose';
 import Select from '@mui/joy/Select';
 import Option from '@mui/joy/Option';
 import Table from '@mui/joy/Table';
@@ -17,17 +12,52 @@ import Checkbox from '@mui/joy/Checkbox';
 import IconButton from '@mui/joy/IconButton';
 import Typography from '@mui/joy/Typography';
 
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import SearchIcon from '@mui/icons-material/Search';
 
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../../store/index';
 
-import { fetchTransactions, removeTransactions } from '../../store/transactionSlice';
+import { Transaction, fetchTransactions, removeTransactions } from '../../store/transactionSlice';
 import ChangeModal from '../Modal/changeTransaction';
 import TableSkeleton from '../Skeleton';
 import { Snackbar } from '@mui/joy';
+import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 
+
+function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
+  if (b[orderBy] < a[orderBy]) {
+    return -1;
+  }
+  if (b[orderBy] > a[orderBy]) {
+    return 1;
+  }
+  return 0;
+}
+
+type Order = 'asc' | 'desc';
+
+function getComparator<Key extends keyof any>(
+  order: Order,
+  orderBy: Key,
+): (
+  a: { [key in Key]: number | string },
+  b: { [key in Key]: number | string },
+) => number {
+  return order === 'desc'
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
+  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) {
+      return order;
+    }
+    return a[1] - b[1];
+  });
+  return stabilizedThis.map((el) => el[0]);
+}
 
 export default function OrderTable() {
   const dispatch = useAppDispatch()
@@ -36,14 +66,62 @@ export default function OrderTable() {
 
   const [openSnack, setOpenSnack] = React.useState(false);
   const [deletedCount, setDeletedCount] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const [order, setOrder] = React.useState<Order>('asc');
+  const [orderBy, setOrderBy] = React.useState<keyof Transaction>('amount');
+
+  const handleRequestSort = (
+    event: React.MouseEvent<unknown>,
+    property: keyof Transaction,
+  ) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
 
 
   const [selected, setSelected] = React.useState<string[]>([]);
   const [open, setOpen] = React.useState(false);
+  const [page, setPage] = React.useState(0);
+
+  const handleChangeRowsPerPage = (event: any, newValue: number | null) => {
+    if (newValue !== null) {
+      setRowsPerPage(parseInt(newValue.toString(), 10));
+      setPage(0);
+    }
+  };
+
 
   React.useEffect(() => {
     dispatch(fetchTransactions());
   }, [dispatch]);
+
+  function labelDisplayedRows({
+    from,
+    to,
+    count,
+  }: {
+    from: number;
+    to: number;
+    count: number;
+  }) {
+    return `${from}–${to} of ${count !== -1 ? count : `more than ${to}`}`;
+  }
+
+  const handleChangePage = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const getLabelDisplayedRowsTo = () => {
+    if (transactions.length === -1) {
+      return (page + 1) * rowsPerPage;
+    }
+    return rowsPerPage === -1
+      ? transactions.length
+      : Math.min(transactions.length, (page + 1) * rowsPerPage);
+  };
+
 
   const handleDeleteSelected = async () => {
     try {
@@ -56,90 +134,9 @@ export default function OrderTable() {
     }
   };
 
-  const renderFilters = () => (
-    <React.Fragment>
-      <FormControl size="sm">
-        <FormLabel>Status</FormLabel>
-        <Select
-          size="sm"
-          placeholder="Filter by category"
-          slotProps={{ button: { sx: { whiteSpace: 'nowrap' } } }}
-        >
-          <Option value="pending">Pending</Option>
-          <Option value="refunded">Refunded</Option>
-          <Option value="cancelled">Cancelled</Option>
-        </Select>
-      </FormControl>
-      <FormControl size="sm">
-        <FormLabel>Category</FormLabel>
-        <Select size="sm" placeholder="All">
-          <Option value="all">All</Option>
-          <Option value="school">School</Option>
-          <Option value="work">Work</Option>
-          <Option value="university">University</Option>
-        </Select>
-      </FormControl>
-    </React.Fragment>
-  );
+
   return (
     <React.Fragment>
-      <Sheet
-        className="SearchAndFilters-mobile"
-        sx={{
-          display: { xs: 'flex', sm: 'none' },
-          my: 1,
-          gap: 1,
-        }}
-      >
-        <Input
-          size="sm"
-          placeholder="Search"
-          startDecorator={<SearchIcon />}
-          sx={{ flexGrow: 1 }}
-        />
-        <IconButton
-          size="sm"
-          variant="outlined"
-          color="neutral"
-          onClick={() => setOpen(true)}
-        >
-          <FilterAltIcon />
-        </IconButton>
-        <Modal open={open} onClose={() => setOpen(false)}>
-          <ModalDialog aria-labelledby="filter-modal" layout="fullscreen">
-            <ModalClose />
-            <Typography id="filter-modal" level="h2">
-              Filters
-            </Typography>
-            <Divider sx={{ my: 2 }} />
-            <Sheet sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              {renderFilters()}
-              <Button color="primary" onClick={() => setOpen(false)}>
-                Submit
-              </Button>
-            </Sheet>
-          </ModalDialog>
-        </Modal>
-      </Sheet>
-      <Box
-        className="SearchAndFilters-tabletUp"
-        sx={{
-          borderRadius: 'sm',
-          py: 2,
-          display: { xs: 'none', sm: 'flex' },
-          flexWrap: 'wrap',
-          gap: 1.5,
-          '& > *': {
-            minWidth: { xs: '120px', md: '160px' },
-          },
-        }}
-      >
-        <FormControl sx={{ flex: 1 }} size="sm">
-          <FormLabel>Search for order</FormLabel>
-          <Input size="sm" placeholder="Search" startDecorator={<SearchIcon />} />
-        </FormControl>
-        {renderFilters()}
-      </Box>
       <Sheet
         className="OrderTableContainer"
         variant="outlined"
@@ -196,46 +193,103 @@ export default function OrderTable() {
           </thead>
           <tbody>
             {loading ? <TableSkeleton /> : (
-              transactions.map((transaction) => (
-                <tr key={transaction.transactionId}>
-                  <td style={{ textAlign: 'center', width: 120 }}>
-                    <Checkbox
-                      size="sm"
-                      checked={selected.includes(transaction.transactionId)}
-                      color={selected.includes(transaction.transactionId) ? 'primary' : undefined}
-                      onChange={(event) => {
-                        setSelected((ids) =>
-                          event.target.checked
-                            ? ids.concat(transaction.transactionId)
-                            : ids.filter((itemId) => itemId !== transaction.transactionId),
-                        );
-                      }}
-                      slotProps={{ checkbox: { sx: { textAlign: 'left' } } }}
-                      sx={{ verticalAlign: 'text-bottom' }}
-                    />
-                  </td>
-                  <td>
-                    <Typography level="body-xs">{new Date(transaction.createdAt).toLocaleDateString()}</Typography>
-                  </td>
-                  <td>
-                    <Typography level="body-xs">{transaction.type}</Typography>
-                  </td>
-                  <td>
-                    <Typography level="body-xs">{transaction.category}</Typography>
-                  </td>
-                  <td style={{ textAlign: 'center' }}>
-                    <Typography level="body-xs">{transaction.description}</Typography>
-                  </td>
-                  <td>
-                    <Typography level="body-xs">{transaction.amount}</Typography>
-                  </td>
-                  <td>
-                    <ChangeModal transactionToEdit={transaction} />
-                  </td>
-                </tr>
-              ))
+              transactions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((transaction) => (
+                  <tr key={transaction.transactionId}>
+                    <td style={{ textAlign: 'center', width: 120 }}>
+                      <Checkbox
+                        size="sm"
+                        checked={selected.includes(transaction.transactionId)}
+                        color={selected.includes(transaction.transactionId) ? 'primary' : undefined}
+                        onChange={(event) => {
+                          setSelected((ids) =>
+                            event.target.checked
+                              ? ids.concat(transaction.transactionId)
+                              : ids.filter((itemId) => itemId !== transaction.transactionId),
+                          );
+                        }}
+                        slotProps={{ checkbox: { sx: { textAlign: 'left' } } }}
+                        sx={{ verticalAlign: 'text-bottom' }}
+                      />
+                    </td>
+                    <td>
+                      <Typography level="body-xs">{new Date(transaction.createdAt).toLocaleDateString()}</Typography>
+                    </td>
+                    <td>
+                      <Typography level="body-xs">{transaction.type}</Typography>
+                    </td>
+                    <td>
+                      <Typography level="body-xs">{transaction.category}</Typography>
+                    </td>
+                    <td style={{ textAlign: 'center' }}>
+                      <Typography level="body-xs">{transaction.description}</Typography>
+                    </td>
+                    <td>
+                      <Typography level="body-xs">{transaction.amount}</Typography>
+                    </td>
+                    <td>
+                      <ChangeModal transactionToEdit={transaction} />
+                    </td>
+                  </tr>
+                ))
             )}
           </tbody>
+          <tfoot>
+            <tr>
+              <td colSpan={7}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    justifyContent: 'flex-end',
+                  }}
+                >
+                  <FormControl orientation="horizontal" size="sm">
+                    <FormLabel>Rows per page:</FormLabel>
+                    <Select onChange={handleChangeRowsPerPage} value={rowsPerPage}>
+                      <Option value={3}>3</Option>
+                      <Option value={5}>5</Option>
+                      <Option value={10}>10</Option>
+                    </Select>
+                  </FormControl>
+                  <Typography textAlign="center" sx={{ minWidth: 80 }}>
+                    {labelDisplayedRows({
+                      from: transactions.length === 0 ? 0 : page * rowsPerPage + 1,
+                      to: getLabelDisplayedRowsTo(),
+                      count: transactions.length === -1 ? -1 : transactions.length,
+                    })}
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <IconButton
+                      size="sm"
+                      color="neutral"
+                      variant="outlined"
+                      disabled={page === 0}
+                      onClick={() => handleChangePage(page - 1)}
+                      sx={{ bgcolor: 'background.surface' }}
+                    >
+                      <KeyboardArrowLeft />
+                    </IconButton>
+                    <IconButton
+                      size="sm"
+                      color="neutral"
+                      variant="outlined"
+                      disabled={
+                        transactions.length !== -1
+                          ? page >= Math.ceil(transactions.length / rowsPerPage) - 1
+                          : false
+                      }
+                      onClick={() => handleChangePage(page + 1)}
+                      sx={{ bgcolor: 'background.surface' }}
+                    >
+                      <KeyboardArrowRight />
+                    </IconButton>
+                  </Box>
+                </Box>
+              </td>
+            </tr>
+          </tfoot>
         </Table>
       </Sheet>
       <Box mt={4}>

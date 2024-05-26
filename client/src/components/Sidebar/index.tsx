@@ -13,6 +13,7 @@ import Sheet from '@mui/joy/Sheet';
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import BrightnessAutoRoundedIcon from '@mui/icons-material/BrightnessAutoRounded';
+import PieChartIcon from '@mui/icons-material/PieChart';
 
 import ColorSchemeToggle from '../../utils/toggleTheme';
 import { closeSidebar } from '../../utils/toggleSidebar';
@@ -124,7 +125,7 @@ export default function Sidebar() {
 
           <ListItem>
             <ListItemButton selected={isSelected('/shedule')} onClick={() => navigate('/shedule')}>
-              <DashboardRoundedIcon />
+              <PieChartIcon />
               <ListItemContent>
                 <Typography level="title-sm">Shedule</Typography>
               </ListItemContent>
