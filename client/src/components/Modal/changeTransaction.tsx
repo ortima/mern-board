@@ -15,6 +15,8 @@ import { MoreVert } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store';
 import { NumericFormatAdapter } from '../../utils/numericFormat';
+import { Snackbar } from '@mui/joy';
+
 
 interface FormElements extends HTMLFormControlsCollection {
   type: HTMLSelectElement | HTMLInputElement | any;
@@ -34,6 +36,8 @@ interface ChangeModalProps {
 
 export default function BasicModalDialog({ transactionToEdit }: ChangeModalProps) {
   const [open, setOpen] = React.useState<boolean>(false);
+  const [openSnack, setOpenSnack] = React.useState<boolean>(false);
+
   const dispatch: AppDispatch = useDispatch();
 
   const [formData, setFormData] = React.useState({
@@ -45,14 +49,19 @@ export default function BasicModalDialog({ transactionToEdit }: ChangeModalProps
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log(formData)
 
-    const formattedValue = `₽${value.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
-
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: formattedValue,
-    }));
+    if (name === "amount") {
+      const formattedValue = `₽${value.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        [name]: formattedValue,
+      }));
+    } else {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSelectChange = (name: string, value: string | null) => {
@@ -82,6 +91,7 @@ export default function BasicModalDialog({ transactionToEdit }: ChangeModalProps
       const response = await dispatch(updateTransactionAsync(data));
       if (response) {
         setOpen(false);
+        setOpenSnack(true)
         console.log(data)
       } else {
         console.error('Failed to update transaction');
@@ -149,6 +159,14 @@ export default function BasicModalDialog({ transactionToEdit }: ChangeModalProps
           </form>
         </ModalDialog>
       </Modal>
+      <Snackbar
+        autoHideDuration={2000}
+        onClose={() => setOpenSnack(false)}
+        open={openSnack}
+        color='success'
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+        Transaction changed
+      </Snackbar>
     </React.Fragment>
   );
 }

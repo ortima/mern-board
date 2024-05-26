@@ -10,10 +10,13 @@ import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import Layout from '../components/Layout';
 import Pallete from '../components/Charts/Pallete';
 import { fetchTransactions } from '../store/transactionSlice';
-import { useAppDispatch } from '../store';
+import { RootState, useAppDispatch } from '../store';
+import { useSelector } from 'react-redux';
+import BasicModalDialog from '../components/Modal';
 
 const Shedule = () => {
   const dispatch = useAppDispatch();
+  const transactions = useSelector((state: RootState) => state.transactions.transactions)
 
   React.useEffect(() => {
     dispatch(fetchTransactions());
@@ -80,7 +83,18 @@ const Shedule = () => {
             Shedule
           </Typography>
         </Box>
-        <Pallete />
+        {transactions.length > 0 ?
+          <Pallete />
+          :
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+            <Typography level='h3'>
+              You cant see anything, because you have not any transactions!
+            </Typography>
+            <Box>
+              <BasicModalDialog />
+            </Box>
+          </Box>
+        }
       </Box>
     </Layout>
   )

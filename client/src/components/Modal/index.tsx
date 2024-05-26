@@ -14,6 +14,7 @@ import { useDispatch } from 'react-redux';
 import { addTransaction } from '../../store/transactionSlice';
 import { AppDispatch } from '../../store';
 import { NumericFormatAdapter } from '../../utils/numericFormat';
+import { Snackbar } from '@mui/joy';
 
 interface FormElements extends HTMLFormControlsCollection {
   type: HTMLSelectElement | HTMLInputElement | any;
@@ -26,11 +27,10 @@ interface Form extends HTMLFormElement {
   readonly elements: FormElements;
 }
 
-
-
 export default function BasicModalDialog() {
   const dispatch: AppDispatch = useDispatch();
   const [open, setOpen] = React.useState<boolean>(false);
+  const [openSnack, setOpenSnack] = React.useState<boolean>(false);
 
   async function submitHandler(event: React.FormEvent<Form>) {
     event.preventDefault()
@@ -60,7 +60,8 @@ export default function BasicModalDialog() {
     try {
       const response = await dispatch(addTransaction(data))
       if (response.meta.requestStatus === 'fulfilled') {
-        setOpen(false);
+        setOpen(false)
+        setOpenSnack(true)
       } else {
         console.error('Failed to add transaction');
       }
@@ -114,6 +115,14 @@ export default function BasicModalDialog() {
           </form>
         </ModalDialog>
       </Modal>
+      <Snackbar
+        autoHideDuration={2000}
+        onClose={() => setOpenSnack(false)}
+        open={openSnack}
+        color='success'
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+        Transaction added
+      </Snackbar>
     </React.Fragment>
   );
 }

@@ -81,13 +81,13 @@ export default function Registration() {
       persistent: formElements.persistent.checked,
     };
 
-    setPasswordError(data.password !== data.confirmPassword);
-
-
-    if (passwordError) {
-      setOpen(true)
-      setSnackbarInfo({ message: 'Password fields dont match!', color: "warning" });
+    if (data.password !== data.confirmPassword) {
+      setPasswordError(true);
+      setOpen(true);
+      setSnackbarInfo({ message: 'Password fields dont match!', color: 'warning' });
       return;
+    } else {
+      setPasswordError(false);
     }
 
 
