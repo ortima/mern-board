@@ -16,48 +16,13 @@ import Typography from '@mui/joy/Typography';
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../../store/index';
 
-import { Transaction, fetchTransactions, removeTransactions } from '../../store/transactionSlice';
+import { fetchTransactions, removeTransactions } from '../../store/transactionSlice';
 import ChangeModal from '../Modal/changeTransaction';
 import TableSkeleton from '../Skeleton';
 import { Snackbar } from '@mui/joy';
-import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
+import { Delete, KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
+import BasicModalDialog from '../Modal';
 
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-type Order = 'asc' | 'desc';
-
-function getComparator<Key extends keyof any>(
-  order: Order,
-  orderBy: Key,
-): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string },
-) => number {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
-  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
 
 export default function OrderTable() {
   const dispatch = useAppDispatch()
@@ -68,21 +33,9 @@ export default function OrderTable() {
   const [deletedCount, setDeletedCount] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-  const [order, setOrder] = React.useState<Order>('asc');
-  const [orderBy, setOrderBy] = React.useState<keyof Transaction>('amount');
-
-  const handleRequestSort = (
-    event: React.MouseEvent<unknown>,
-    property: keyof Transaction,
-  ) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
 
 
   const [selected, setSelected] = React.useState<string[]>([]);
-  const [open, setOpen] = React.useState(false);
   const [page, setPage] = React.useState(0);
 
   const handleChangeRowsPerPage = (event: any, newValue: number | null) => {
@@ -137,6 +90,18 @@ export default function OrderTable() {
 
   return (
     <React.Fragment>
+      <Box display={'flex'} justifyContent={'space-between'} my={3}>
+        <Button
+          startDecorator={<Delete />}
+          variant="outlined"
+          color="neutral"
+          onClick={handleDeleteSelected}
+          sx={selected.length === 0 ? { display: 'none' } : { display: 'inline-flex' }}
+        >
+          Remove item
+        </Button>
+        <BasicModalDialog />
+      </Box>
       <Sheet
         className="OrderTableContainer"
         variant="outlined"
@@ -292,24 +257,14 @@ export default function OrderTable() {
           </tfoot>
         </Table>
       </Sheet>
-      <Box mt={4}>
-        <Button
-          variant="outlined"
-          color="neutral"
-          onClick={handleDeleteSelected}
-          disabled={selected.length === 0}
-        >
-          Remove item
-        </Button>
-        <Snackbar
-          autoHideDuration={2000}
-          onClose={() => setOpenSnack(false)}
-          open={openSnack}
-          color='danger'
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-          {deletedCount > 1 ? `Deleted ${deletedCount} items` : `Deleted item`}
-        </Snackbar>
-      </Box>
+      <Snackbar
+        autoHideDuration={2000}
+        onClose={() => setOpenSnack(false)}
+        open={openSnack}
+        color='danger'
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+        {deletedCount > 1 ? `Deleted ${deletedCount} items` : `Deleted item`}
+      </Snackbar>
     </React.Fragment>
   );
 }

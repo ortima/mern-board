@@ -7,7 +7,6 @@ import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 
 import OrderTable from '../components/OrderTable';
-import BasicModalDialog from '../components/Modal';
 import Layout from '../components/Layout';
 
 
@@ -73,7 +72,6 @@ export default function Dashboard() {
           <Typography level="h2" component="h1">
             Dashboard
           </Typography>
-          <BasicModalDialog />
         </Box>
         <OrderTable />
       </Box>
