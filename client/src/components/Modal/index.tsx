@@ -14,7 +14,6 @@ import { useDispatch } from 'react-redux';
 import { addTransaction } from '../../store/transactionSlice';
 import { AppDispatch } from '../../store';
 import { NumericFormatAdapter } from '../../utils/numericFormat';
-import { NumberFormatBase } from 'react-number-format';
 
 interface FormElements extends HTMLFormControlsCollection {
   type: HTMLSelectElement | HTMLInputElement | any;
