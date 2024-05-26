@@ -1,3 +1,4 @@
+import React from 'react';
 import Box from '@mui/joy/Box';
 import Breadcrumbs from '@mui/joy/Breadcrumbs';
 import Link from '@mui/joy/Link';
@@ -6,11 +7,17 @@ import Typography from '@mui/joy/Typography';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 
-import OrderTable from '../components/OrderTable';
-import BasicModalDialog from '../components/Modal';
 import Layout from '../components/Layout';
+import Pallete from '../components/Charts/Pallete';
+import { fetchTransactions } from '../store/transactionSlice';
+import { useAppDispatch } from '../store';
 
 const Shedule = () => {
+  const dispatch = useAppDispatch();
+
+  React.useEffect(() => {
+    dispatch(fetchTransactions());
+  }, [dispatch]);
   return (
     <Layout>
       <Box
@@ -74,7 +81,7 @@ const Shedule = () => {
           </Typography>
           {/* <BasicModalDialog /> */}
         </Box>
-        {/* <OrderTable /> */}
+        <Pallete />
       </Box>
     </Layout>
   )
