@@ -19,42 +19,16 @@ import { closeSidebar } from '../../utils/toggleSidebar';
 import { logoutUser } from '../../store/authSlice';
 import { RootState, useAppDispatch } from '../../store';
 import { useSelector } from 'react-redux';
-
-function Toggler({
-  defaultExpanded = false,
-  renderToggle,
-  children,
-}: {
-  defaultExpanded?: boolean;
-  children: React.ReactNode;
-  renderToggle: (params: {
-    open: boolean;
-    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  }) => React.ReactNode;
-}) {
-  const [open, setOpen] = React.useState(defaultExpanded);
-  return (
-    <React.Fragment>
-      {renderToggle({ open, setOpen })}
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateRows: open ? '1fr' : '0fr',
-          transition: '0.2s ease',
-          '& > *': {
-            overflow: 'hidden',
-          },
-        }}
-      >
-        {children}
-      </Box>
-    </React.Fragment>
-  );
-}
+import { useLocation, useNavigate } from 'react-router';
 
 export default function Sidebar() {
 
-  const userData = useSelector((state: RootState) => state.auth.userData);
+  const navigate = useNavigate()
+  const userData = useSelector((state: RootState) => state.auth?.userData);
+  const location = useLocation()
+
+  const isSelected = (path: string) => location.pathname === path;
+
 
   const dispacth = useAppDispatch()
   const handleLogout = () => {
@@ -140,7 +114,7 @@ export default function Sidebar() {
           }}
         >
           <ListItem>
-            <ListItemButton selected>
+            <ListItemButton selected={isSelected('/dashboard')} onClick={() => navigate('/dashboard')}>
               <DashboardRoundedIcon />
               <ListItemContent>
                 <Typography level="title-sm">Dashboard</Typography>
@@ -149,7 +123,7 @@ export default function Sidebar() {
           </ListItem>
 
           <ListItem>
-            <ListItemButton>
+            <ListItemButton selected={isSelected('/shedule')} onClick={() => navigate('/shedule')}>
               <DashboardRoundedIcon />
               <ListItemContent>
                 <Typography level="title-sm">Shedule</Typography>

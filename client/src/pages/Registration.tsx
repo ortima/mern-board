@@ -17,7 +17,8 @@ import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import { registerUser } from '../store/authSlice';
 import { useAppDispatch } from '../store';
-import { Snackbar, SnackbarProps } from '@mui/joy';
+import { LinearProgress, Snackbar, SnackbarProps } from '@mui/joy';
+import { Email, Key } from '@mui/icons-material';
 
 interface FormElements extends HTMLFormControlsCollection {
   name: HTMLInputElement
@@ -64,6 +65,10 @@ export default function Registration() {
       color: "neutral"
     });
 
+  const [value, setValue] = React.useState('');
+  const minLength = 6;
+
+  const [passwordError, setPasswordError] = React.useState(false);
 
   const handleSubmit = async (event: React.FormEvent<SignUpFormElement>) => {
     event.preventDefault();
@@ -76,7 +81,10 @@ export default function Registration() {
       persistent: formElements.persistent.checked,
     };
 
-    if (data.password !== data.confirmPassword) {
+    setPasswordError(data.password !== data.confirmPassword);
+
+
+    if (passwordError) {
       setOpen(true)
       setSnackbarInfo({ message: 'Password fields dont match!', color: "warning" });
       return;
@@ -220,15 +228,48 @@ export default function Registration() {
                 </FormControl>
                 <FormControl required>
                   <FormLabel>Email</FormLabel>
-                  <Input type="text" name="email" />
+                  <Input type="text" name="email" startDecorator={<Email />} />
                 </FormControl>
-                <FormControl required>
+                <FormControl required error={passwordError}>
                   <FormLabel>Password</FormLabel>
-                  <Input type="password" name="password" />
+                  <Stack
+                    spacing={0.5}
+                    sx={{
+                      '--hue': Math.min(value.length * 10, 120),
+                    }}
+                  >
+                    <Input
+                      type="password"
+                      name='password'
+                      placeholder="Type in here…"
+                      startDecorator={<Key />}
+                      value={value}
+                      onChange={(event) => setValue(event.currentTarget.value || '')}
+                    />
+                    <LinearProgress
+                      determinate
+                      size="sm"
+                      value={Math.min((value.length * 100) / minLength, 100)}
+                      sx={{
+                        bgcolor: 'background.level3',
+                        color: 'hsl(var(--hue) 80% 40%)',
+                      }}
+                    />
+                    <Typography
+                      level="body-xs"
+                      sx={{ alignSelf: 'flex-end', color: 'hsl(var(--hue) 80% 30%)' }}
+                    >
+                      {value.length < 3 && 'Very weak'}
+                      {value.length >= 3 && value.length < 6 && 'Weak'}
+                      {value.length >= 6 && value.length < 10 && 'Strong'}
+                      {value.length >= 10 && 'Very strong'}
+                    </Typography>
+                  </Stack>
+
                 </FormControl>
-                <FormControl required>
+                <FormControl required error={passwordError}>
                   <FormLabel>Confirm password</FormLabel>
-                  <Input type="password" name="confirmPassword" />
+                  <Input startDecorator={<Key />} type="password" name="confirmPassword" />
                 </FormControl>
                 <Stack gap={4} sx={{ mt: 2 }}>
                   <Box

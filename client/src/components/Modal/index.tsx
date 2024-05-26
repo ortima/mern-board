@@ -13,6 +13,8 @@ import Add from '@mui/icons-material/Add';
 import { useDispatch } from 'react-redux';
 import { addTransaction } from '../../store/transactionSlice';
 import { AppDispatch } from '../../store';
+import { NumericFormatAdapter } from '../../utils/numericFormat';
+import { NumberFormatBase } from 'react-number-format';
 
 interface FormElements extends HTMLFormControlsCollection {
   type: HTMLSelectElement | HTMLInputElement | any;
@@ -106,7 +108,7 @@ export default function BasicModalDialog() {
               </FormControl>
               <FormControl>
                 <FormLabel>Amount</FormLabel>
-                <Input type='number' name='amount' required />
+                <Input name='amount' required slotProps={{ input: { component: NumericFormatAdapter } }} />
               </FormControl>
               <Button type="submit">Submit</Button>
             </Stack>

@@ -14,6 +14,7 @@ import { IconButton, Tooltip } from '@mui/joy';
 import { MoreVert } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store';
+import { NumericFormatAdapter } from '../../utils/numericFormat';
 
 interface FormElements extends HTMLFormControlsCollection {
   type: HTMLSelectElement | HTMLInputElement | any;
@@ -44,9 +45,13 @@ export default function BasicModalDialog({ transactionToEdit }: ChangeModalProps
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    console.log(formData)
+
+    const formattedValue = `₽${value.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
+
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: value,
+      [name]: formattedValue,
     }));
   };
 
@@ -132,8 +137,7 @@ export default function BasicModalDialog({ transactionToEdit }: ChangeModalProps
               </FormControl>
               <FormControl>
                 <FormLabel>Amount</FormLabel>
-                <Input
-                  type="number"
+                <Input slotProps={{ input: { component: NumericFormatAdapter } }}
                   name="amount"
                   required
                   value={formData.amount}

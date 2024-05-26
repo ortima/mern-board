@@ -18,6 +18,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { loginUser } from '../store/authSlice';
 import { useAppDispatch } from '../store';
 import Snackbar, { SnackbarProps } from '@mui/joy/Snackbar';
+import { Key } from '@mui/icons-material';
 
 
 interface FormElements extends HTMLFormControlsCollection {
@@ -185,7 +186,7 @@ export default function Login() {
                 </FormControl>
                 <FormControl required>
                   <FormLabel>Password</FormLabel>
-                  <Input type="password" name="password" />
+                  <Input type="password" name="password" startDecorator={<Key />} />
                 </FormControl>
                 <Stack gap={4} sx={{ mt: 2 }}>
                   <Box
