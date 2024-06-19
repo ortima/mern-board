@@ -1,24 +1,23 @@
-import * as React from 'react'
-import { useState } from 'react'
-import { styled } from '@mui/material/styles'
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
-import Toolbar from '@mui/material/Toolbar'
-import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
-import Badge from '@mui/material/Badge'
-import MenuIcon from '@mui/icons-material/Menu'
-import NotificationsIcon from '@mui/icons-material/Notifications'
-import { Avatar, Box, Menu, MenuItem, Tooltip } from '@mui/material'
+import * as React from 'react';
+import { styled } from '@mui/material/styles';
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import Badge from '@mui/material/Badge';
+import MenuIcon from '@mui/icons-material/Menu';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import { Avatar, Box, Menu, MenuItem, Tooltip } from '@mui/material';
 
 interface AppBarProps extends MuiAppBarProps {
-  open?: boolean
-  toggleDrawer: () => void
+  open?: boolean;
+  toggleDrawer?: () => void;
 }
 
-const drawerWidth = 240
+const drawerWidth = 240;
 
 const StyledAppBar = styled(MuiAppBar, {
-  shouldForwardProp: prop => prop !== 'open',
+  shouldForwardProp: (prop) => prop !== 'open',
 })<AppBarProps>(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
   transition: theme.transitions.create(['width', 'margin'], {
@@ -33,23 +32,23 @@ const StyledAppBar = styled(MuiAppBar, {
       duration: theme.transitions.duration.enteringScreen,
     }),
   }),
-}))
+}));
 
 const AppBarComponent: React.FC<AppBarProps> = ({ open, toggleDrawer }) => {
-  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget)
-  }
+    setAnchorElUser(event.currentTarget);
+  };
 
   const handleCloseUserMenu = () => {
-    setAnchorElUser(null)
-  }
+    setAnchorElUser(null);
+  };
 
-  const settings = ['Setting 1', 'Setting 2', 'Setting 3']
+  const settings = ['Setting 1', 'Setting 2', 'Setting 3'];
 
   return (
-    <StyledAppBar toggleDrawer={toggleDrawer} position="absolute" open={open}>
+    <StyledAppBar position="absolute" open={open}>
       <Toolbar sx={{ pr: '24px' }}>
         <IconButton
           edge="start"
@@ -59,7 +58,8 @@ const AppBarComponent: React.FC<AppBarProps> = ({ open, toggleDrawer }) => {
           sx={{
             marginRight: '36px',
             ...(open && { display: 'none' }),
-          }}>
+          }}
+        >
           <MenuIcon />
         </IconButton>
         <Typography
@@ -67,7 +67,8 @@ const AppBarComponent: React.FC<AppBarProps> = ({ open, toggleDrawer }) => {
           variant="h6"
           color="inherit"
           noWrap
-          sx={{ flexGrow: 1 }}>
+          sx={{ flexGrow: 1 }}
+        >
           Dashboard
         </Typography>
         <IconButton color="inherit">
@@ -95,8 +96,9 @@ const AppBarComponent: React.FC<AppBarProps> = ({ open, toggleDrawer }) => {
               horizontal: 'right',
             }}
             open={Boolean(anchorElUser)}
-            onClose={handleCloseUserMenu}>
-            {settings.map(setting => (
+            onClose={handleCloseUserMenu}
+          >
+            {settings.map((setting) => (
               <MenuItem key={setting} onClick={handleCloseUserMenu}>
                 <Typography variant="body1" align="center">
                   {setting}
@@ -107,7 +109,7 @@ const AppBarComponent: React.FC<AppBarProps> = ({ open, toggleDrawer }) => {
         </Box>
       </Toolbar>
     </StyledAppBar>
-  )
-}
+  );
+};
 
-export default AppBarComponent
+export default AppBarComponent;
