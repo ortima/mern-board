@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import DeleteIcon from "@mui/icons-material/Delete"
+import EditIcon from "@mui/icons-material/Edit"
+import Popup from "./Popup"
 import {
   SelectionState,
   PagingState,
   IntegratedPaging,
   IntegratedSelection,
-  EditingState,
 } from "@devexpress/dx-react-grid"
 import {
   Grid,
@@ -42,9 +43,9 @@ const TableComponent: React.FC<TableComponentProps> = () => {
   const loading = useSelector((state: RootState) => state.transactions.loading)
   const error = useSelector((state: RootState) => state.transactions.error)
   const [selection, setSelection] = useState<(string | number)[]>([])
-  const [editingRowIds, setEditingRowIds] = useState<(string | number)[]>([])
-  const [addedRows, setAddedRows] = useState<Transaction[]>([])
-
+  const [editPopupOpen, setEditPopupOpen] = useState(false)
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<Transaction | null>(null)
   useEffect(() => {
     dispatch(fetchTransactions())
   }, [dispatch])
@@ -55,41 +56,20 @@ const TableComponent: React.FC<TableComponentProps> = () => {
     setSelection([])
   }
 
-  const handleCommitChanges = ({ added, changed, deleted }: any) => {
-    let changedRows = [...transactions]
-
-    if (added) {
-      added.forEach((row: any) => {
-        // Perform any necessary validations or transformations here
-        changedRows.push(row)
-      })
-    }
-
-    if (changed) {
-      changedRows = changedRows.map((row) =>
-        changed[row.transactionId]
-          ? { ...row, ...changed[row.transactionId] }
-          : row
+  const handleEditSelected = () => {
+    if (selection.length === 1) {
+      const selectedTransaction = transactions.find(
+        (transaction) => transaction.transactionId === selection[0]
       )
-      changedRows.forEach((transaction) =>
-        dispatch(updateTransactionAsync(transaction))
-      )
+      if (selectedTransaction) {
+        setSelectedTransaction(selectedTransaction)
+        setEditPopupOpen(true)
+      }
     }
-
-    if (deleted) {
-      const deletedSet = new Set(deleted)
-      changedRows = changedRows.filter(
-        (row) => !deletedSet.has(row.transactionId)
-      )
-    }
-
-    // Dispatch an action to update the transactions in the store
-    // Example: dispatch(updateTransactions(changedRows));
-    // setTransactions(changedRows); // Update local state
   }
 
   const logSelectedTransactions = () => {
-    console.log("Current selection:", selection) // Debug: log current selection
+    console.log("Current selection:", selection)
     const selectedTransactions = transactions.filter((transaction) =>
       selection.includes(transaction.transactionId)
     )
@@ -99,6 +79,11 @@ const TableComponent: React.FC<TableComponentProps> = () => {
   useEffect(() => {
     logSelectedTransactions()
   }, [selection])
+
+  const handleCloseEditPopup = () => {
+    setEditPopupOpen(false)
+    setSelectedTransaction(null)
+  }
 
   if (loading) return <div>Loading...</div>
   if (error) return <div>Error: {error}</div>
@@ -115,13 +100,6 @@ const TableComponent: React.FC<TableComponentProps> = () => {
           selection={selection}
           onSelectionChange={setSelection}
         />
-        <EditingState
-          editingRowIds={editingRowIds}
-          onEditingRowIdsChange={setEditingRowIds}
-          addedRows={addedRows}
-          onAddedRowsChange={setAddedRows}
-          onCommitChanges={handleCommitChanges}
-        />
         <IntegratedPaging />
         <IntegratedSelection />
         <Table />
@@ -131,12 +109,31 @@ const TableComponent: React.FC<TableComponentProps> = () => {
       </Grid>
       <Button
         startIcon={<DeleteIcon />}
-        sx={{ display: selection.length > 0 ? "inline-flex" : "none" }}
+        sx={{ display: selection.length > 0 ? "inline-flex" : "none", ml: 1 }}
         onClick={handleDeleteSelected}
         disabled={selection.length === 0}
       >
         Delete Selected
       </Button>
+      <Button
+        startIcon={<EditIcon />}
+        sx={{ display: selection.length === 1 ? "inline-flex" : "none", ml: 1 }}
+        onClick={handleEditSelected}
+        disabled={selection.length !== 1}
+      >
+        Edit Selected
+      </Button>
+      {editPopupOpen && (
+        <Popup
+          transaction={selectedTransaction}
+          open={editPopupOpen}
+          onClose={handleCloseEditPopup}
+          onSave={(updatedTransaction) => {
+            dispatch(updateTransactionAsync(updatedTransaction))
+            handleCloseEditPopup()
+          }}
+        />
+      )}
     </>
   )
 }
