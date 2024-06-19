@@ -1,11 +1,13 @@
-import React, { ChangeEvent, useState } from "react"
-import Dialog from "@mui/material/Dialog"
-import DialogActions from "@mui/material/DialogActions"
-import DialogContent from "@mui/material/DialogContent"
-import DialogTitle from "@mui/material/DialogTitle"
-import Button from "@mui/material/Button"
-import TextField from "@mui/material/TextField"
-import { Transaction } from "../../store/transactionSlice"
+import React, { ChangeEvent, useState } from 'react'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import Button from '@mui/material/Button'
+import Input from '@mui/material/Input'
+import TextField from '@mui/material/TextField'
+import { Transaction } from '../../store/transactionSlice'
+import { NumericFormatAdapter } from '../../utils/numericFormat'
 
 interface PopupProps {
   transaction: Transaction | null
@@ -24,7 +26,7 @@ const Popup: React.FC<PopupProps> = ({
     useState<Transaction | null>(transaction)
 
   const handleFieldChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     if (!editedTransaction) return
     setEditedTransaction({
@@ -83,13 +85,22 @@ const Popup: React.FC<PopupProps> = ({
               onChange={handleFieldChange}
             />
             <TextField
-              margin="dense"
               name="amount"
               label="Amount"
               type="number"
+              InputProps={{
+                inputComponent: NumericFormatAdapter as any,
+              }}
               fullWidth
               value={editedTransaction.amount}
               onChange={handleFieldChange}
+            />
+            <Input
+              name="amount"
+              required
+              value={editedTransaction.amount}
+              onChange={handleFieldChange}
+              inputComponent={NumericFormatAdapter as any}
             />
           </>
         )}
