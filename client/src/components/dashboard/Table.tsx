@@ -1,36 +1,37 @@
-import React, { useEffect, useState } from "react"
-import { useSelector } from "react-redux"
-import DeleteIcon from "@mui/icons-material/Delete"
-import EditIcon from "@mui/icons-material/Edit"
-import Popup from "./Popup"
+import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
 import {
   SelectionState,
   PagingState,
   IntegratedPaging,
   IntegratedSelection,
-} from "@devexpress/dx-react-grid"
+} from '@devexpress/dx-react-grid'
 import {
   Grid,
   Table,
   TableHeaderRow,
   TableSelection,
   PagingPanel,
-} from "@devexpress/dx-react-grid-material-ui"
-import { RootState, useAppDispatch } from "../../store"
+} from '@devexpress/dx-react-grid-material-ui'
+import { RootState, useAppDispatch } from '../../store'
 import {
   fetchTransactions,
   removeTransactions,
   Transaction,
   updateTransactionAsync,
-} from "../../store/transactionSlice"
-import Button from "@mui/material/Button"
+} from '../../store/transactionSlice'
+import Button from '@mui/material/Button'
+import { formatTransaction } from '../../utils/transactionsUtils'
+import EditModal from './EditModal'
 
 const COLUMNS = [
-  { name: "createdAt", title: "Date" },
-  { name: "type", title: "Type" },
-  { name: "category", title: "Category" },
-  { name: "description", title: "Description" },
-  { name: "amount", title: "Amount" },
+  { name: 'createdAt', title: 'Дата' },
+  { name: 'type', title: 'Тип' },
+  { name: 'category', title: 'Категория' },
+  { name: 'description', title: 'Описание' },
+  { name: 'amount', title: 'Сумма' },
 ]
 
 interface TableComponentProps {}
@@ -38,7 +39,7 @@ interface TableComponentProps {}
 const TableComponent: React.FC<TableComponentProps> = () => {
   const dispatch = useAppDispatch()
   const transactions = useSelector(
-    (state: RootState) => state.transactions.transactions
+    (state: RootState) => state.transactions.transactions,
   )
   const loading = useSelector((state: RootState) => state.transactions.loading)
   const error = useSelector((state: RootState) => state.transactions.error)
@@ -51,7 +52,7 @@ const TableComponent: React.FC<TableComponentProps> = () => {
   }, [dispatch])
 
   const handleDeleteSelected = () => {
-    const selectedTransactionIds = selection.map((id) => id.toString())
+    const selectedTransactionIds = selection.map(id => id.toString())
     dispatch(removeTransactions(selectedTransactionIds))
     setSelection([])
   }
@@ -59,7 +60,7 @@ const TableComponent: React.FC<TableComponentProps> = () => {
   const handleEditSelected = () => {
     if (selection.length === 1) {
       const selectedTransaction = transactions.find(
-        (transaction) => transaction.transactionId === selection[0]
+        transaction => transaction.transactionId === selection[0],
       )
       if (selectedTransaction) {
         setSelectedTransaction(selectedTransaction)
@@ -68,17 +69,9 @@ const TableComponent: React.FC<TableComponentProps> = () => {
     }
   }
 
-  const logSelectedTransactions = () => {
-    console.log("Current selection:", selection)
-    const selectedTransactions = transactions.filter((transaction) =>
-      selection.includes(transaction.transactionId)
-    )
-    console.log("Selected Transactions:", selectedTransactions)
-  }
-
-  useEffect(() => {
-    logSelectedTransactions()
-  }, [selection])
+  const formattedTransactions = transactions.map(transaction =>
+    formatTransaction(transaction),
+  )
 
   const handleCloseEditPopup = () => {
     setEditPopupOpen(false)
@@ -91,10 +84,9 @@ const TableComponent: React.FC<TableComponentProps> = () => {
   return (
     <>
       <Grid
-        rows={transactions}
+        rows={formattedTransactions}
         columns={COLUMNS}
-        getRowId={(row) => row.transactionId}
-      >
+        getRowId={row => row.transactionId}>
         <PagingState defaultCurrentPage={0} pageSize={6} />
         <SelectionState
           selection={selection}
@@ -109,26 +101,24 @@ const TableComponent: React.FC<TableComponentProps> = () => {
       </Grid>
       <Button
         startIcon={<DeleteIcon />}
-        sx={{ display: selection.length > 0 ? "inline-flex" : "none", ml: 1 }}
+        sx={{ display: selection.length > 0 ? 'inline-flex' : 'none', ml: 1 }}
         onClick={handleDeleteSelected}
-        disabled={selection.length === 0}
-      >
+        disabled={selection.length === 0}>
         Delete Selected
       </Button>
       <Button
         startIcon={<EditIcon />}
-        sx={{ display: selection.length === 1 ? "inline-flex" : "none", ml: 1 }}
+        sx={{ display: selection.length === 1 ? 'inline-flex' : 'none', ml: 1 }}
         onClick={handleEditSelected}
-        disabled={selection.length !== 1}
-      >
+        disabled={selection.length !== 1}>
         Edit Selected
       </Button>
       {editPopupOpen && (
-        <Popup
+        <EditModal
           transaction={selectedTransaction}
           open={editPopupOpen}
           onClose={handleCloseEditPopup}
-          onSave={(updatedTransaction) => {
+          onSave={updatedTransaction => {
             dispatch(updateTransactionAsync(updatedTransaction))
             handleCloseEditPopup()
           }}
