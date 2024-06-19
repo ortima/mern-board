@@ -22,7 +22,7 @@ app.use('/api', transactionRoutes)
 const start = async () => {
   try {
     await mongoose.connect(
-      'mongodb+srv://admin:admin@cluster.lop7faj.mongodb.net/?retryWrites=true&w=majority'
+      'mongodb+srv://root:root@mern.zeznxgg.mongodb.net/?retryWrites=true&w=majority&appName=MERN'
     )
     app.listen(PORT, () =>
       console.log(`Server has been started on port ${PORT}...`)
