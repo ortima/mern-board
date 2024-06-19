@@ -1,17 +1,16 @@
-import * as React from "react"
-import Button from "@mui/material/Button"
-import FormControl from "@mui/material/FormControl"
-import InputLabel from "@mui/material/InputLabel"
-import Input from "@mui/material/Input"
-import Dialog from "@mui/material/Dialog"
-import DialogTitle from "@mui/material/DialogTitle"
-import Stack from "@mui/material/Stack"
-import AddIcon from "@mui/icons-material/Add"
-import { useDispatch } from "react-redux"
-import { addTransaction } from "../../store/transactionSlice"
-import { AppDispatch } from "../../store"
-import { NumericFormatAdapter } from "../../utils/numericFormat"
-import CustomSelectFormControl from "../shared/CustomSelectFormControl"
+import * as React from 'react'
+import Button from '@mui/material/Button'
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
+import Input from '@mui/material/Input'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import Stack from '@mui/material/Stack'
+import AddIcon from '@mui/icons-material/Add'
+import { useDispatch } from 'react-redux'
+import { addTransaction } from '../../store/transactionSlice'
+import { AppDispatch } from '../../store'
+import CustomSelectFormControl from '../shared/CustomSelectFormControl'
 
 interface FormElements extends HTMLFormControlsCollection {
   type: HTMLSelectElement | HTMLInputElement | any
@@ -24,18 +23,18 @@ interface Form extends HTMLFormElement {
   readonly elements: FormElements
 }
 
-export default function BasicModalDialog() {
+export default function AddModal() {
   const dispatch: AppDispatch = useDispatch()
   const [open, setOpen] = React.useState<boolean>(false)
 
   async function submitHandler(event: React.FormEvent<Form>) {
     event.preventDefault()
-    const userDataString = localStorage.getItem("userData")
+    const userDataString = localStorage.getItem('userData')
     const userData = userDataString ? JSON.parse(userDataString) : null
     const userId = userData ? userData.userId : null
 
     if (!userId) {
-      console.error("userId not found in localStorage")
+      console.error('userId not found in localStorage')
       return
     }
 
@@ -53,13 +52,13 @@ export default function BasicModalDialog() {
 
     try {
       const response = await dispatch(addTransaction(data))
-      if (response.meta.requestStatus === "fulfilled") {
+      if (response.meta.requestStatus === 'fulfilled') {
         setOpen(false)
       } else {
-        console.error("Failed to add transaction")
+        console.error('Failed to add transaction')
       }
     } catch (error) {
-      console.error(error, "Error")
+      console.error(error, 'Error')
     }
   }
 
@@ -68,8 +67,7 @@ export default function BasicModalDialog() {
       <Button
         variant="outlined"
         startIcon={<AddIcon />}
-        onClick={() => setOpen(true)}
-      >
+        onClick={() => setOpen(true)}>
         New transaction
       </Button>
       <Dialog open={open} onClose={() => setOpen(false)}>
@@ -81,8 +79,8 @@ export default function BasicModalDialog() {
               defaultValue="expense"
               name="type"
               options={[
-                { value: "expense", label: "Расходы" },
-                { value: "income", label: "Доходы" },
+                { value: 'expense', label: 'Расходы' },
+                { value: 'income', label: 'Доходы' },
               ]}
             />
             <CustomSelectFormControl
@@ -90,9 +88,9 @@ export default function BasicModalDialog() {
               name="category"
               defaultValue="school"
               options={[
-                { value: "school", label: "Школа" },
-                { value: "work", label: "Работа" },
-                { value: "university", label: "Университет" },
+                { value: 'school', label: 'Школа' },
+                { value: 'work', label: 'Работа' },
+                { value: 'university', label: 'Университет' },
               ]}
             />
             <FormControl fullWidth>
@@ -101,11 +99,7 @@ export default function BasicModalDialog() {
             </FormControl>
             <FormControl fullWidth>
               <InputLabel>Amount</InputLabel>
-              <Input
-                name="amount"
-                required
-                inputComponent={NumericFormatAdapter as any}
-              />
+              <Input type="number" name="amount" required />
             </FormControl>
             <Button type="submit" variant="contained">
               Submit
