@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "server": "nodemon --quiet server",
     "client": "cd .. && cd client &&  npm start",
