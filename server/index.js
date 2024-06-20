@@ -4,6 +4,7 @@ import dotenv from "dotenv"
 import mongoose from "mongoose"
 import authRoutes from "./routes/auth.route.js"
 import transactionRoutes from "./routes/transaction.route.js"
+import { bulkWriteTransactions } from "./controllers/transactionController.js"
 
 dotenv.config()
 
@@ -36,6 +37,9 @@ const startServer = async () => {
       useUnifiedTopology: true,
     })
     console.log("MongoDB Connected")
+
+    //просто вызов при старте
+    await bulkWriteTransactions()
 
     app.listen(PORT, () => {
       console.log(`Server started on port: ${PORT}`)

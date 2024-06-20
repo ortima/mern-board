@@ -1,4 +1,7 @@
 import Transaction from "../models/Transaction.js"
+import { v4 as uuidv4 } from "uuid"
+import { Types } from "mongoose"
+import transactions from "../testdata.js"
 
 export const createTransaction = async (req, res) => {
   try {
@@ -10,6 +13,51 @@ export const createTransaction = async (req, res) => {
     res.status(201).json(transaction)
   } catch (error) {
     res.status(400).json({ error: error.message })
+  }
+}
+
+export const bulkWriteTransactions = async () => {
+  try {
+    // Вариант, когда мы можем написать какую операцию мы хотим произвести
+
+    // const bulkOps = [
+    //   {
+    //     insertOne: {
+    //       document: {
+    //         transactionId: uuidv4(),
+    //         userId: new Types.ObjectId("6672890f9c87a4ce571f03c0"),
+    //         type: "income",
+    //         category: "University",
+    //         description: "Bonus",
+    //         amount: 3000,
+    //         createdAt: new Date(),
+    //         updatedAt: new Date(),
+    //       },
+    //     },
+    //   },
+    //   {
+    //     insertOne: {
+    //       document: {
+    //         transactionId: uuidv4(),
+    //         userId: new Types.ObjectId("6672890f9c87a4ce571f03c0"),
+    //         type: "expense",
+    //         category: "Work",
+    //         description: "Dinner",
+    //         amount: 50,
+    //         createdAt: new Date(),
+    //         updatedAt: new Date(),
+    //       },
+    //     },
+    //   },
+    // ]
+
+    // const result = await Transaction.bulkWrite(bulkOps)
+
+    //insert many check
+    const result = await Transaction.insertMany(transactions)
+    console.log("Bulk operations completed successfully", result)
+  } catch (error) {
+    console.error("Error performing bulk operations", error.message)
   }
 }
 
@@ -56,21 +104,6 @@ export const updateTransaction = async (req, res) => {
     res.status(400).json({ error: error.message })
   }
 }
-
-// export const deleteTransaction = async (req, res) => {
-//   try {
-//     const transaction = await Transaction.findOneAndDelete({
-//       _id: req.params.id,
-//       userId: req.user._id,
-//     })
-//     if (!transaction) {
-//       return res.status(404).json({ error: 'Transaction not found' })
-//     }
-//     res.status(200).json({ message: 'Transaction deleted successfully' })
-//   } catch (error) {
-//     res.status(400).json({ error: error.message })
-//   }
-// }
 
 export const deleteTransactions = async (req, res) => {
   try {
