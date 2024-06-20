@@ -1,13 +1,13 @@
-import React, { ChangeEvent, useState } from 'react'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import DialogTitle from '@mui/material/DialogTitle'
-import Button from '@mui/material/Button'
-import Input from '@mui/material/Input'
-import TextField from '@mui/material/TextField'
-import { Transaction } from '../../store/transactionSlice'
-import { NumericFormatAdapter } from '../../utils/numericFormat'
+import React, { ChangeEvent, useState } from "react"
+import Dialog from "@mui/material/Dialog"
+import DialogActions from "@mui/material/DialogActions"
+import DialogContent from "@mui/material/DialogContent"
+import DialogTitle from "@mui/material/DialogTitle"
+import Button from "@mui/material/Button"
+import TextField from "@mui/material/TextField"
+import { Transaction } from "../../store/transactionSlice"
+import CustomSelectFormControl from "../shared/CustomSelectFormControl"
+import { SelectChangeEvent } from "@mui/material/Select"
 
 interface EditModalProps {
   transaction: Transaction | null
@@ -26,12 +26,15 @@ const EditModal: React.FC<EditModalProps> = ({
     useState<Transaction | null>(transaction)
 
   const handleFieldChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e:
+      | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | SelectChangeEvent<string>
   ) => {
     if (!editedTransaction) return
+    const { name, value } = e.target
     setEditedTransaction({
       ...editedTransaction,
-      [e.target.name]: e.target.value,
+      [name]: value,
     })
   }
 
@@ -47,32 +50,25 @@ const EditModal: React.FC<EditModalProps> = ({
       <DialogContent>
         {editedTransaction && (
           <>
-            <TextField
-              autoFocus
-              margin="dense"
-              name="createdAt"
-              label="Date"
-              type="text"
-              fullWidth
-              value={editedTransaction.createdAt}
-              onChange={handleFieldChange}
-            />
-            <TextField
-              margin="dense"
-              name="type"
+            <CustomSelectFormControl
               label="Type"
-              type="text"
-              fullWidth
-              value={editedTransaction.type}
+              defaultValue={editedTransaction.type}
+              name="type"
+              options={[
+                { value: "expense", label: "Расходы" },
+                { value: "income", label: "Доходы" },
+              ]}
               onChange={handleFieldChange}
             />
-            <TextField
-              margin="dense"
-              name="category"
+            <CustomSelectFormControl
               label="Category"
-              type="text"
-              fullWidth
-              value={editedTransaction.category}
+              name="category"
+              defaultValue={editedTransaction.category}
+              options={[
+                { value: "school", label: "Школа" },
+                { value: "work", label: "Работа" },
+                { value: "university", label: "Университет" },
+              ]}
               onChange={handleFieldChange}
             />
             <TextField
@@ -88,19 +84,9 @@ const EditModal: React.FC<EditModalProps> = ({
               name="amount"
               label="Amount"
               type="number"
-              InputProps={{
-                inputComponent: NumericFormatAdapter as any,
-              }}
               fullWidth
               value={editedTransaction.amount}
               onChange={handleFieldChange}
-            />
-            <Input
-              name="amount"
-              required
-              value={editedTransaction.amount}
-              onChange={handleFieldChange}
-              inputComponent={NumericFormatAdapter as any}
             />
           </>
         )}
