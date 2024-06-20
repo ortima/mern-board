@@ -1,37 +1,28 @@
-const { Router } = require('express')
+import { Router } from "express"
+import {
+  createTransaction,
+  getAllTransactions,
+  getTransactionById,
+  updateTransaction,
+  deleteTransactions,
+} from "../controllers/transactionController.js"
+import authMiddleware from "./middleware.js"
+
 const router = Router()
-const transactionController = require('../controllers/transactionController')
-const authMiddleware = require('./middleware')
 
-router.post(
-  '/transactions',
-  authMiddleware,
-  transactionController.createTransaction
-)
-router.get(
-  '/transactions',
-  authMiddleware,
-  transactionController.getAllTransactions
-)
-router.get(
-  '/transactions/:id',
-  authMiddleware,
-  transactionController.getTransactionById
-)
-router.put(
-  '/transactions/:id',
-  authMiddleware,
-  transactionController.updateTransaction
-)
-// router.delete(
-//   '/transactions/:id',
-//   authMiddleware,
-//   transactionController.deleteTransaction
-// )
-router.delete(
-  '/transactions',
-  authMiddleware,
-  transactionController.deleteTransactions
-)
+// Create Transaction
+router.post("/transactions", authMiddleware, createTransaction)
 
-module.exports = router
+// Get All Transactions
+router.get("/transactions", authMiddleware, getAllTransactions)
+
+// Get Transaction by ID
+router.get("/transactions/:id", authMiddleware, getTransactionById)
+
+// Update Transaction
+router.put("/transactions/:id", authMiddleware, updateTransaction)
+
+// Delete Transactions
+router.delete("/transactions", authMiddleware, deleteTransactions)
+
+export default router

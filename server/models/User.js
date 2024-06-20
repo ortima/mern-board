@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose')
+import { Schema, model } from "mongoose"
 
 const userSchema = new Schema({
   name: { type: String, required: true, unique: false },
@@ -7,4 +7,6 @@ const userSchema = new Schema({
   // sessionExpires: { type: Date, default: () => new Date(+new Date() + 7*24*60*60*1000) }
 })
 
-module.exports = model('User', userSchema)
+const User = model("User", userSchema)
+
+export default User

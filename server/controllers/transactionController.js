@@ -1,6 +1,6 @@
-const Transaction = require('../models/Transaction')
+import Transaction from "../models/Transaction.js"
 
-exports.createTransaction = async (req, res) => {
+export const createTransaction = async (req, res) => {
   try {
     const transaction = new Transaction({
       ...req.body,
@@ -13,23 +13,27 @@ exports.createTransaction = async (req, res) => {
   }
 }
 
-exports.getAllTransactions = async (req, res) => {
+export const getAllTransactions = async (req, res) => {
   try {
-    const transactions = await Transaction.find({ userId: req.user._id })
+    const transactions = await Transaction.aggregate([
+      {
+        $match: { userId: req.user._id },
+      },
+    ])
     res.status(200).json(transactions)
   } catch (error) {
     res.status(400).json({ error: error.message })
   }
 }
 
-exports.getTransactionById = async (req, res) => {
+export const getTransactionById = async (req, res) => {
   try {
     const transaction = await Transaction.findOne({
       _id: req.params.id,
       userId: req.user._id,
     })
     if (!transaction) {
-      return res.status(404).json({ error: 'Transaction not found' })
+      return res.status(404).json({ error: "Transaction not found" })
     }
     res.status(200).json(transaction)
   } catch (error) {
@@ -37,7 +41,7 @@ exports.getTransactionById = async (req, res) => {
   }
 }
 
-exports.updateTransaction = async (req, res) => {
+export const updateTransaction = async (req, res) => {
   try {
     const transaction = await Transaction.findOneAndUpdate(
       { transactionId: req.params.id, userId: req.user._id },
@@ -45,7 +49,7 @@ exports.updateTransaction = async (req, res) => {
       { new: true }
     )
     if (!transaction) {
-      return res.status(404).json({ error: 'Transaction not found' })
+      return res.status(404).json({ error: "Transaction not found" })
     }
     res.status(200).json(transaction)
   } catch (error) {
@@ -53,7 +57,7 @@ exports.updateTransaction = async (req, res) => {
   }
 }
 
-// exports.deleteTransaction = async (req, res) => {
+// export const deleteTransaction = async (req, res) => {
 //   try {
 //     const transaction = await Transaction.findOneAndDelete({
 //       _id: req.params.id,
@@ -68,22 +72,23 @@ exports.updateTransaction = async (req, res) => {
 //   }
 // }
 
-exports.deleteTransactions = async (req, res) => {
+export const deleteTransactions = async (req, res) => {
   try {
     const { transactionIds } = req.body
     if (!Array.isArray(transactionIds)) {
-      return res.status(400).json({ error: 'transactionIds must be an array' })
+      return res.status(400).json({ error: "transactionIds must be an array" })
     }
 
     const result = await Transaction.deleteMany({
       transactionId: { $in: transactionIds },
+      userId: req.user._id,
     })
 
     if (result.deletedCount === 0) {
-      return res.status(404).json({ error: 'Transactions not found' })
+      return res.status(404).json({ error: "Transactions not found" })
     }
 
-    res.status(200).json({ message: 'Transactions deleted successfully' })
+    res.status(200).json({ message: "Transactions deleted successfully" })
   } catch (error) {
     res.status(400).json({ error: error.message })
   }
