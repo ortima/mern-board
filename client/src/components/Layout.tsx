@@ -1,21 +1,21 @@
-import * as React from "react"
+import * as React from "react";
 import {
   CssBaseline,
   Box,
   ThemeProvider,
   createTheme,
   Toolbar,
-} from "@mui/material"
-import AppBarComponent from "./Appbar"
-import DrawerComponent from "./Drawer"
+} from "@mui/material";
+import AppBarComponent from "./Appbar";
+import DrawerComponent from "./Drawer";
 
-const defaultTheme = createTheme()
+const defaultTheme = createTheme();
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [open, setOpen] = React.useState(true)
+  const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
-    setOpen(!open)
-  }
+    setOpen(!open);
+  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -40,7 +40,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         </Box>
       </Box>
     </ThemeProvider>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;

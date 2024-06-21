@@ -1,22 +1,22 @@
-import * as React from "react"
-import { styled } from "@mui/material/styles"
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar"
-import Toolbar from "@mui/material/Toolbar"
-import Typography from "@mui/material/Typography"
-import IconButton from "@mui/material/IconButton"
-import Badge from "@mui/material/Badge"
-import MenuIcon from "@mui/icons-material/Menu"
-import NotificationsIcon from "@mui/icons-material/Notifications"
-import { Avatar, Box, Menu, MenuItem, Tooltip } from "@mui/material"
-import { useAppDispatch } from "../store"
-import { logoutUser } from "../store/authSlice"
+import * as React from "react";
+import { styled } from "@mui/material/styles";
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import Badge from "@mui/material/Badge";
+import MenuIcon from "@mui/icons-material/Menu";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import { Avatar, Box, Menu, MenuItem, Tooltip } from "@mui/material";
+import { useAppDispatch } from "../store";
+import { logoutUser } from "../store/authSlice";
 
 interface AppBarProps extends MuiAppBarProps {
-  open?: boolean
-  toggleDrawer?: () => void
+  open?: boolean;
+  toggleDrawer?: () => void;
 }
 
-const drawerWidth = 240
+const drawerWidth = 240;
 
 const StyledAppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -34,28 +34,28 @@ const StyledAppBar = styled(MuiAppBar, {
       duration: theme.transitions.duration.enteringScreen,
     }),
   }),
-}))
+}));
 
 const AppBarComponent: React.FC<AppBarProps> = ({ open, toggleDrawer }) => {
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  )
+    null,
+  );
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget)
-  }
+    setAnchorElUser(event.currentTarget);
+  };
 
   const handleCloseUserMenu = () => {
-    setAnchorElUser(null)
-  }
+    setAnchorElUser(null);
+  };
 
   const handleLogout = () => {
-    dispatch(logoutUser())
-    handleCloseUserMenu()
-  }
-  const settings = ["Logout"]
+    dispatch(logoutUser());
+    handleCloseUserMenu();
+  };
+  const settings = ["Logout"];
 
   return (
     <StyledAppBar position="absolute" open={open}>
@@ -119,7 +119,7 @@ const AppBarComponent: React.FC<AppBarProps> = ({ open, toggleDrawer }) => {
         </Box>
       </Toolbar>
     </StyledAppBar>
-  )
-}
+  );
+};
 
-export default AppBarComponent
+export default AppBarComponent;

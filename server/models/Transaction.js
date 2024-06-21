@@ -1,5 +1,5 @@
-import { Schema, model, Types } from "mongoose"
-import { v4 as uuidv4 } from "uuid"
+import { Schema, model, Types } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 
 const transactionSchema = new Schema({
   transactionId: { type: String, default: uuidv4, unique: true },
@@ -10,13 +10,13 @@ const transactionSchema = new Schema({
   amount: { type: Number, required: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
-})
+});
 
 transactionSchema.pre("save", function (next) {
-  this.updatedAt = Date.now()
-  next()
-})
+  this.updatedAt = Date.now();
+  next();
+});
 
-const Transaction = model("Transaction", transactionSchema)
+const Transaction = model("Transaction", transactionSchema);
 
-export default Transaction
+export default Transaction;

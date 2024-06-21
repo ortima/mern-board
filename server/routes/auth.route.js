@@ -1,17 +1,17 @@
-import { Router } from "express"
+import { Router } from "express";
 import {
   validateRegistrationData,
   createUser,
   validateLoginData,
   loginUser,
-} from "../controllers/authController.js"
+} from "../controllers/authController.js";
 
-const router = Router()
+const router = Router();
 
 // Registration
-router.post("/registration", validateRegistrationData, createUser)
+router.post("/registration", validateRegistrationData, createUser);
 
 // Login
-router.post("/login", validateLoginData, loginUser)
+router.post("/login", validateLoginData, loginUser);
 
-export default router
+export default router;

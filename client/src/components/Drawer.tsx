@@ -1,19 +1,19 @@
-import * as React from "react"
-import { styled } from "@mui/material/styles"
-import MuiDrawer from "@mui/material/Drawer"
-import Toolbar from "@mui/material/Toolbar"
-import Divider from "@mui/material/Divider"
-import IconButton from "@mui/material/IconButton"
-import List from "@mui/material/List"
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
-import { mainListItems } from "./dashboard/ListItems"
+import * as React from "react";
+import { styled } from "@mui/material/styles";
+import MuiDrawer from "@mui/material/Drawer";
+import Toolbar from "@mui/material/Toolbar";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import { mainListItems } from "./dashboard/ListItems";
 
 interface DrawerProps {
-  open: boolean
-  toggleDrawer: () => void
+  open: boolean;
+  toggleDrawer: () => void;
 }
 
-const drawerWidth = 240
+const drawerWidth = 240;
 
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -39,7 +39,7 @@ const Drawer = styled(MuiDrawer, {
       },
     }),
   },
-}))
+}));
 
 const DrawerComponent: React.FC<DrawerProps> = ({ open, toggleDrawer }) => (
   <Drawer variant="permanent" open={open}>
@@ -61,6 +61,6 @@ const DrawerComponent: React.FC<DrawerProps> = ({ open, toggleDrawer }) => (
       <Divider sx={{ my: 1 }} />
     </List>
   </Drawer>
-)
+);
 
-export default DrawerComponent
+export default DrawerComponent;

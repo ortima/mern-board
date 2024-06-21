@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from "uuid"
-import { Types } from "mongoose"
+import { v4 as uuidv4 } from "uuid";
+import { Types } from "mongoose";
 
 //моковые данные для user admin
 const transactions = [
@@ -23,6 +23,6 @@ const transactions = [
     createdAt: new Date(),
     updatedAt: new Date(),
   },
-]
+];
 
-export default transactions
+export default transactions;

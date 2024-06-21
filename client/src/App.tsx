@@ -1,9 +1,4 @@
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import PrivateRoute from "./utils/ProtectedRoutes";
 import Registration from "./pages/Registration";
@@ -12,7 +7,6 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 
 function App() {
-
   return (
     <Provider store={store}>
       <BrowserRouter>
@@ -26,7 +20,6 @@ function App() {
         </Routes>
       </BrowserRouter>
     </Provider>
-
   );
 }
 export default App;

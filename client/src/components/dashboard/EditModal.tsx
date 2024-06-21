@@ -1,19 +1,19 @@
-import React, { ChangeEvent, useState } from "react"
-import Dialog from "@mui/material/Dialog"
-import DialogActions from "@mui/material/DialogActions"
-import DialogContent from "@mui/material/DialogContent"
-import DialogTitle from "@mui/material/DialogTitle"
-import Button from "@mui/material/Button"
-import TextField from "@mui/material/TextField"
-import { Transaction } from "../../store/transactionSlice"
-import CustomSelectFormControl from "../shared/CustomSelectFormControl"
-import { SelectChangeEvent } from "@mui/material/Select"
+import React, { ChangeEvent, useState } from "react";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import { Transaction } from "../../store/transactionSlice";
+import CustomSelectFormControl from "../shared/CustomSelectFormControl";
+import { SelectChangeEvent } from "@mui/material/Select";
 
 interface EditModalProps {
-  transaction: Transaction | null
-  open: boolean
-  onClose: () => void
-  onSave: (updatedTransaction: Transaction) => void
+  transaction: Transaction | null;
+  open: boolean;
+  onClose: () => void;
+  onSave: (updatedTransaction: Transaction) => void;
 }
 
 const EditModal: React.FC<EditModalProps> = ({
@@ -23,26 +23,26 @@ const EditModal: React.FC<EditModalProps> = ({
   onSave,
 }) => {
   const [editedTransaction, setEditedTransaction] =
-    useState<Transaction | null>(transaction)
+    useState<Transaction | null>(transaction);
 
   const handleFieldChange = (
     e:
       | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-      | SelectChangeEvent<string>
+      | SelectChangeEvent<string>,
   ) => {
-    if (!editedTransaction) return
-    const { name, value } = e.target
+    if (!editedTransaction) return;
+    const { name, value } = e.target;
     setEditedTransaction({
       ...editedTransaction,
       [name]: value,
-    })
-  }
+    });
+  };
 
   const handleSave = () => {
     if (editedTransaction) {
-      onSave(editedTransaction)
+      onSave(editedTransaction);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
@@ -100,7 +100,7 @@ const EditModal: React.FC<EditModalProps> = ({
         </Button>
       </DialogActions>
     </Dialog>
-  )
-}
+  );
+};
 
-export default EditModal
+export default EditModal;
