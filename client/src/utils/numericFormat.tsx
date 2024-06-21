@@ -1,4 +1,4 @@
-import React from "react";
+import { forwardRef } from "react";
 import { NumericFormat, NumericFormatProps } from "react-number-format";
 
 interface CustomProps {
@@ -6,26 +6,25 @@ interface CustomProps {
   name: string;
 }
 
-export const NumericFormatAdapter = React.forwardRef<
-  NumericFormatProps,
-  CustomProps
->(function NumericFormatAdapter(props, ref) {
-  const { onChange, ...other } = props;
-  return (
-    <NumericFormat
-      {...other}
-      getInputRef={ref}
-      onValueChange={(values) => {
-        onChange({
-          target: {
-            name: props.name,
-            value: values.value,
-          },
-        });
-      }}
-      thousandSeparator
-      valueIsNumericString
-      prefix="₽"
-    />
-  );
-});
+export const NumericFormatAdapter = forwardRef<NumericFormatProps, CustomProps>(
+  function NumericFormatAdapter(props, ref) {
+    const { onChange, ...other } = props;
+    return (
+      <NumericFormat
+        {...other}
+        getInputRef={ref}
+        onValueChange={(values) => {
+          onChange({
+            target: {
+              name: props.name,
+              value: values.value,
+            },
+          });
+        }}
+        thousandSeparator
+        valueIsNumericString
+        prefix="₽"
+      />
+    );
+  },
+);

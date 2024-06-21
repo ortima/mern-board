@@ -1,13 +1,7 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Paper from "@mui/material/Paper";
-import Link from "@mui/material/Link";
+import { Box, Typography, Container, Paper, Link } from "@mui/material";
 import Layout from "../components/Layout";
 import TableComponent from "../components/dashboard/Table";
 import AddModal from "../components/dashboard/AddModal";
-import EditModal from "../components/dashboard/EditModal";
 
 function Copyright(props: any) {
   return (
@@ -22,7 +16,6 @@ function Copyright(props: any) {
         Your Website
       </Link>{" "}
       {new Date().getFullYear()}
-      {"."}
     </Typography>
   );
 }

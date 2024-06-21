@@ -1,13 +1,19 @@
-import * as React from "react";
-import { styled } from "@mui/material/styles";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import Badge from "@mui/material/Badge";
-import MenuIcon from "@mui/icons-material/Menu";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import { Avatar, Box, Menu, MenuItem, Tooltip } from "@mui/material";
+import { useState } from "react";
+import MuiAppBar from "@mui/material/AppBar";
+import {
+  Toolbar,
+  Typography,
+  IconButton,
+  Badge,
+  Avatar,
+  Box,
+  Menu,
+  MenuItem,
+  Tooltip,
+  styled,
+  AppBarProps as MuiAppBarProps,
+} from "@mui/material";
+import { Notifications, Menu as MenuIcon } from "@mui/icons-material";
 import { useAppDispatch } from "../store";
 import { logoutUser } from "../store/authSlice";
 
@@ -39,9 +45,7 @@ const StyledAppBar = styled(MuiAppBar, {
 const AppBarComponent: React.FC<AppBarProps> = ({ open, toggleDrawer }) => {
   const dispatch = useAppDispatch();
 
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null,
-  );
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -83,7 +87,7 @@ const AppBarComponent: React.FC<AppBarProps> = ({ open, toggleDrawer }) => {
         </Typography>
         <IconButton color="inherit">
           <Badge badgeContent={4} color="secondary">
-            <NotificationsIcon />
+            <Notifications />
           </Badge>
         </IconButton>
         <Box sx={{ flexGrow: 0 }}>

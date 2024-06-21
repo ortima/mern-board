@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import {
   CssBaseline,
   Box,
@@ -12,7 +12,7 @@ import DrawerComponent from "./Drawer";
 const defaultTheme = createTheme();
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };

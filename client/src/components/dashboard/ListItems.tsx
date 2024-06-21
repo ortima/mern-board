@@ -1,23 +1,19 @@
-import * as React from "react";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import PieChartIcon from "@mui/icons-material/PieChart";
+import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import { Dashboard, PieChart } from "@mui/icons-material";
 
 export const mainListItems = (
-  <React.Fragment>
+  <>
     <ListItemButton>
       <ListItemIcon>
-        <DashboardIcon />
+        <Dashboard />
       </ListItemIcon>
       <ListItemText primary="Dashboard" />
     </ListItemButton>
     <ListItemButton>
       <ListItemIcon>
-        <PieChartIcon />
+        <PieChart />
       </ListItemIcon>
       <ListItemText primary="Charts" />
     </ListItemButton>
-  </React.Fragment>
+  </>
 );

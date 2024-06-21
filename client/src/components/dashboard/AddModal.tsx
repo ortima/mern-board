@@ -1,12 +1,14 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Input from "@mui/material/Input";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import Stack from "@mui/material/Stack";
-import AddIcon from "@mui/icons-material/Add";
+import { useState } from "react";
+import {
+  Button,
+  FormControl,
+  InputLabel,
+  Input,
+  Dialog,
+  DialogTitle,
+  Stack,
+} from "@mui/material";
+import { Add } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
 import { addTransaction } from "../../store/transactionSlice";
 import { AppDispatch } from "../../store";
@@ -25,7 +27,7 @@ interface Form extends HTMLFormElement {
 
 export default function AddModal() {
   const dispatch: AppDispatch = useDispatch();
-  const [open, setOpen] = React.useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
 
   async function submitHandler(event: React.FormEvent<Form>) {
     event.preventDefault();
@@ -48,8 +50,6 @@ export default function AddModal() {
       amount: formJson.amount,
     };
 
-    console.log(data);
-
     try {
       const response = await dispatch(addTransaction(data));
       if (response.meta.requestStatus === "fulfilled") {
@@ -63,10 +63,10 @@ export default function AddModal() {
   }
 
   return (
-    <React.Fragment>
+    <>
       <Button
         variant="outlined"
-        startIcon={<AddIcon />}
+        startIcon={<Add />}
         onClick={() => setOpen(true)}
       >
         New transaction
@@ -108,6 +108,6 @@ export default function AddModal() {
           </Stack>
         </form>
       </Dialog>
-    </React.Fragment>
+    </>
   );
 }

@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import authRoutes from "./routes/auth.route.js";
 import transactionRoutes from "./routes/transaction.route.js";
-import { bulkWriteTransactions } from "./controllers/transactionController.js";
 
 dotenv.config();
 

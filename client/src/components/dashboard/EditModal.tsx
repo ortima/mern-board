@@ -1,13 +1,15 @@
-import React, { ChangeEvent, useState } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
+import { ChangeEvent, useState } from "react";
+import {
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  DialogContent,
+  Button,
+  TextField,
+  SelectChangeEvent,
+} from "@mui/material";
 import { Transaction } from "../../store/transactionSlice";
 import CustomSelectFormControl from "../shared/CustomSelectFormControl";
-import { SelectChangeEvent } from "@mui/material/Select";
 
 interface EditModalProps {
   transaction: Transaction | null;
@@ -30,7 +32,9 @@ const EditModal: React.FC<EditModalProps> = ({
       | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
       | SelectChangeEvent<string>,
   ) => {
-    if (!editedTransaction) return;
+    if (!editedTransaction) {
+      return;
+    }
     const { name, value } = e.target;
     setEditedTransaction({
       ...editedTransaction,

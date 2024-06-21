@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -22,7 +22,7 @@ import {
   Transaction,
   updateTransactionAsync,
 } from "../../store/transactionSlice";
-import Button from "@mui/material/Button";
+import { Button } from "@mui/material";
 import { formatTransaction } from "../../utils/transactionsUtils";
 import EditModal from "./EditModal";
 
@@ -78,8 +78,12 @@ const TableComponent: React.FC<TableComponentProps> = () => {
     setSelectedTransaction(null);
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <>

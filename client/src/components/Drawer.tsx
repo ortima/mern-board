@@ -1,11 +1,7 @@
-import * as React from "react";
 import { styled } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
-import Toolbar from "@mui/material/Toolbar";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import List from "@mui/material/List";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import { Toolbar, Divider, IconButton, List } from "@mui/material";
+import { ChevronLeft } from "@mui/icons-material";
 import { mainListItems } from "./dashboard/ListItems";
 
 interface DrawerProps {
@@ -52,7 +48,7 @@ const DrawerComponent: React.FC<DrawerProps> = ({ open, toggleDrawer }) => (
       }}
     >
       <IconButton onClick={toggleDrawer}>
-        <ChevronLeftIcon />
+        <ChevronLeft />
       </IconButton>
     </Toolbar>
     <Divider />

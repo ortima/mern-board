@@ -1,24 +1,30 @@
-import * as React from "react";
+import { useEffect, useState } from "react";
 import { CssVarsProvider, useColorScheme } from "@mui/joy/styles";
-import GlobalStyles from "@mui/joy/GlobalStyles";
-import CssBaseline from "@mui/joy/CssBaseline";
-import Box from "@mui/joy/Box";
-import Button from "@mui/joy/Button";
-import Checkbox from "@mui/joy/Checkbox";
-import FormControl from "@mui/joy/FormControl";
-import FormLabel from "@mui/joy/FormLabel";
-import IconButton, { IconButtonProps } from "@mui/joy/IconButton";
-import Input from "@mui/joy/Input";
-import Typography from "@mui/joy/Typography";
-import Stack from "@mui/joy/Stack";
-import DarkModeRoundedIcon from "@mui/icons-material/DarkModeRounded";
-import LightModeRoundedIcon from "@mui/icons-material/LightModeRounded";
-import BadgeRoundedIcon from "@mui/icons-material/BadgeRounded";
+import {
+  GlobalStyles,
+  CssBaseline,
+  Box,
+  Button,
+  Checkbox,
+  FormControl,
+  FormLabel,
+  Input,
+  Typography,
+  Stack,
+  IconButtonProps,
+  IconButton,
+  Snackbar,
+  SnackbarProps,
+} from "@mui/joy";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../store/authSlice";
 import { useAppDispatch } from "../store";
-import Snackbar, { SnackbarProps } from "@mui/joy/Snackbar";
-import { Key } from "@mui/icons-material";
+import {
+  Key,
+  BadgeRounded,
+  LightModeRounded,
+  DarkModeRounded,
+} from "@mui/icons-material";
 
 interface FormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
@@ -33,9 +39,9 @@ interface SignInFormElement extends HTMLFormElement {
 function ColorSchemeToggle(props: IconButtonProps) {
   const { onClick, ...other } = props;
   const { mode, setMode } = useColorScheme();
-  const [mounted, setMounted] = React.useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  React.useEffect(() => setMounted(true), []);
+  useEffect(() => setMounted(true), []);
 
   return (
     <IconButton
@@ -49,7 +55,7 @@ function ColorSchemeToggle(props: IconButtonProps) {
       }}
       {...other}
     >
-      {mode === "light" ? <DarkModeRoundedIcon /> : <LightModeRoundedIcon />}
+      {mode === "light" ? <DarkModeRounded /> : <LightModeRounded />}
     </IconButton>
   );
 }
@@ -57,8 +63,8 @@ function ColorSchemeToggle(props: IconButtonProps) {
 export default function Login() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState(false);
-  const [snackbarInfo, setSnackbarInfo] = React.useState<{
+  const [open, setOpen] = useState(false);
+  const [snackbarInfo, setSnackbarInfo] = useState<{
     message: string;
     color: SnackbarProps["color"];
   }>({
@@ -145,7 +151,7 @@ export default function Login() {
           >
             <Box sx={{ gap: 2, display: "flex", alignItems: "center" }}>
               <IconButton variant="soft" color="primary" size="sm">
-                <BadgeRoundedIcon />
+                <BadgeRounded />
               </IconButton>
               <Typography level="title-lg">FORTECH</Typography>
             </Box>
