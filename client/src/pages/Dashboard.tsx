@@ -2,6 +2,7 @@ import { Box, Typography, Container, Paper, Link } from "@mui/material";
 import Layout from "../components/Layout";
 import TableComponent from "../components/dashboard/Table";
 import AddModal from "../components/dashboard/AddModal";
+import UploadFileForm from "../components/shared/UploadFileForm";
 
 function Copyright(props: any) {
   return (
@@ -55,6 +56,7 @@ export default function Dashboard() {
             >
               <TableComponent />
             </Paper>
+            <UploadFileForm />
             <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>
