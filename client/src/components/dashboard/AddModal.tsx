@@ -1,4 +1,6 @@
-import { useState } from "react";
+// TODO: передалать на mui/material( для совместимости с кастомным алертом)
+
+import { useCallback, useState } from "react";
 import {
   Button,
   FormControl,
@@ -13,6 +15,8 @@ import { useDispatch } from "react-redux";
 import { addTransaction } from "../../store/transactionSlice";
 import { AppDispatch } from "../../store";
 import CustomSelectFormControl from "../shared/CustomSelectFormControl";
+import { CustomAlert, CustomAlertProps } from "../shared/CustomAlert";
+import { categoryOptions, typeOptions } from "../../constants";
 
 interface FormElements extends HTMLFormControlsCollection {
   type: HTMLSelectElement | HTMLInputElement | any;
@@ -28,6 +32,15 @@ interface Form extends HTMLFormElement {
 export default function AddModal() {
   const dispatch: AppDispatch = useDispatch();
   const [open, setOpen] = useState<boolean>(false);
+  const [alert, setAlert] = useState<CustomAlertProps>({
+    open: false,
+    severity: "info",
+    message: "",
+  });
+
+  const handleAlertClose = useCallback(() => {
+    setAlert({ ...alert, open: false });
+  }, [alert]);
 
   async function submitHandler(event: React.FormEvent<Form>) {
     event.preventDefault();
@@ -36,29 +49,53 @@ export default function AddModal() {
     const userId = userData ? userData.userId : null;
 
     if (!userId) {
-      console.error("userId not found in localStorage");
+      setAlert({
+        open: true,
+        severity: "error",
+        message: "User ID not found. Please log in again.",
+      });
       return;
     }
 
     const formData = new FormData(event.currentTarget);
-    const formJson = Object.fromEntries((formData as any).entries());
-    const data: any = {
-      userId: userId,
-      type: formJson.type,
-      category: formJson.category,
-      description: formJson.description,
-      amount: formJson.amount,
+    const formJson = Object.fromEntries(formData.entries());
+    const { type, category, description, amount } = formJson as {
+      type: string;
+      category: string;
+      description: string;
+      amount: string;
+    };
+
+    const data = {
+      userId,
+      type: type,
+      category: category,
+      description: description,
+      amount: parseFloat(amount),
     };
 
     try {
       const response = await dispatch(addTransaction(data));
       if (response.meta.requestStatus === "fulfilled") {
         setOpen(false);
+        setAlert({
+          open: true,
+          severity: "success",
+          message: "Transaction added successfully!",
+        });
       } else {
-        console.error("Failed to add transaction");
+        setAlert({
+          open: true,
+          severity: "error",
+          message: "Failed to add transaction. Please try again.",
+        });
       }
     } catch (error) {
-      console.error(error, "Error");
+      setAlert({
+        open: true,
+        severity: "error",
+        message: "An error occurred. Please try again.",
+      });
     }
   }
 
@@ -71,6 +108,7 @@ export default function AddModal() {
       >
         New transaction
       </Button>
+
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Create new transaction</DialogTitle>
         <form onSubmit={submitHandler}>
@@ -79,21 +117,16 @@ export default function AddModal() {
               label="Type"
               defaultValue="expense"
               name="type"
-              options={[
-                { value: "expense", label: "Расходы" },
-                { value: "income", label: "Доходы" },
-              ]}
+              options={typeOptions}
             />
+
             <CustomSelectFormControl
               label="Category"
               name="category"
               defaultValue="school"
-              options={[
-                { value: "school", label: "Школа" },
-                { value: "work", label: "Работа" },
-                { value: "university", label: "Университет" },
-              ]}
+              options={categoryOptions}
             />
+
             <FormControl fullWidth>
               <InputLabel>Description</InputLabel>
               <Input required name="description" />
@@ -108,6 +141,12 @@ export default function AddModal() {
           </Stack>
         </form>
       </Dialog>
+      <CustomAlert
+        open={alert.open}
+        severity={alert.severity}
+        message={alert.message}
+        onClose={handleAlertClose}
+      />
     </>
   );
 }

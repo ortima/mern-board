@@ -1,3 +1,5 @@
+// TODO: передалать на mui/material( для совместимости с кастомным алертом)
+
 import { useEffect, useState } from "react";
 import { CssVarsProvider, useColorScheme } from "@mui/joy/styles";
 import {
@@ -101,7 +103,8 @@ export default function Login() {
         });
       }
     } catch (error) {
-      console.error("Error logging in:", error);
+      setOpen(true);
+      setSnackbarInfo({ message: "Error", color: "danger" });
     }
   };
 

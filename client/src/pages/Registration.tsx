@@ -1,3 +1,5 @@
+// TODO: передалать на mui/material( для совместимости с кастомным алертом)
+
 import { useEffect, useState } from "react";
 import { CssVarsProvider, useColorScheme } from "@mui/joy/styles";
 import {
@@ -113,10 +115,11 @@ export default function Registration() {
       );
 
       if (response.payload.errors) {
-        console.error(
-          "Server returned validation errors:",
-          response.payload.errors,
-        );
+        setOpen(true);
+        setSnackbarInfo({
+          message: `Server returned validation errors:${response.payload.errors}`,
+          color: "danger",
+        });
         return;
       }
 
@@ -252,12 +255,15 @@ export default function Registration() {
                   <FormLabel>Name</FormLabel>
                   <Input type="text" name="name" />
                 </FormControl>
+
                 <FormControl required>
                   <FormLabel>Email</FormLabel>
                   <Input type="text" name="email" startDecorator={<Email />} />
                 </FormControl>
+
                 <FormControl required error={passwordError}>
                   <FormLabel>Password</FormLabel>
+
                   <Stack
                     spacing={0.5}
                     sx={{
@@ -274,6 +280,7 @@ export default function Registration() {
                         setValue(event.currentTarget.value || "")
                       }
                     />
+
                     <LinearProgress
                       determinate
                       size="sm"
@@ -283,6 +290,7 @@ export default function Registration() {
                         color: "hsl(var(--hue) 80% 40%)",
                       }}
                     />
+
                     <Typography
                       level="body-xs"
                       sx={{
@@ -297,14 +305,17 @@ export default function Registration() {
                     </Typography>
                   </Stack>
                 </FormControl>
+
                 <FormControl required error={passwordError}>
                   <FormLabel>Confirm password</FormLabel>
+
                   <Input
                     startDecorator={<Key />}
                     type="password"
                     name="confirmPassword"
                   />
                 </FormControl>
+
                 <Stack gap={4} sx={{ mt: 2 }}>
                   <Box
                     sx={{
@@ -314,8 +325,10 @@ export default function Registration() {
                     }}
                   >
                     <Checkbox size="sm" label="Remember me" name="persistent" />
+
                     <Link to="/login">Have an account?</Link>
                   </Box>
+
                   <Button type="submit" fullWidth>
                     Sign up
                   </Button>
@@ -323,6 +336,7 @@ export default function Registration() {
               </form>
             </Stack>
           </Box>
+
           <Box component="footer" sx={{ py: 3 }}>
             <Typography level="body-xs" textAlign="center">
               © ortima {new Date().getFullYear()}

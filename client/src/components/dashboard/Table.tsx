@@ -34,9 +34,7 @@ const COLUMNS = [
   { name: "amount", title: "Сумма" },
 ];
 
-interface TableComponentProps {}
-
-const TableComponent: React.FC<TableComponentProps> = () => {
+const TableComponent: React.FC = () => {
   const dispatch = useAppDispatch();
   const transactions = useSelector(
     (state: RootState) => state.transactions.transactions,
@@ -85,6 +83,11 @@ const TableComponent: React.FC<TableComponentProps> = () => {
     return <div>Error: {error}</div>;
   }
 
+  const handleSave = (updatedTransaction: Transaction) => {
+    dispatch(updateTransactionAsync(updatedTransaction));
+    handleCloseEditPopup();
+  };
+
   return (
     <>
       <Grid
@@ -104,6 +107,7 @@ const TableComponent: React.FC<TableComponentProps> = () => {
         <TableSelection showSelectAll />
         <PagingPanel />
       </Grid>
+
       <Button
         startIcon={<DeleteIcon />}
         sx={{ display: selection.length > 0 ? "inline-flex" : "none", ml: 1 }}
@@ -112,6 +116,7 @@ const TableComponent: React.FC<TableComponentProps> = () => {
       >
         Delete Selected
       </Button>
+
       <Button
         startIcon={<EditIcon />}
         sx={{ display: selection.length === 1 ? "inline-flex" : "none", ml: 1 }}
@@ -120,15 +125,13 @@ const TableComponent: React.FC<TableComponentProps> = () => {
       >
         Edit Selected
       </Button>
+
       {editPopupOpen && (
         <EditModal
           transaction={selectedTransaction}
           open={editPopupOpen}
           onClose={handleCloseEditPopup}
-          onSave={(updatedTransaction) => {
-            dispatch(updateTransactionAsync(updatedTransaction));
-            handleCloseEditPopup();
-          }}
+          onSave={handleSave}
         />
       )}
     </>

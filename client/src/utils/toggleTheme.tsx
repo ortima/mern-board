@@ -51,6 +51,7 @@ export default function ColorSchemeToggle(props: IconButtonProps) {
       ]}
     >
       <DarkModeRoundedIcon />
+
       <LightModeIcon />
     </IconButton>
   );

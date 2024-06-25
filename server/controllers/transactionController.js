@@ -1,6 +1,4 @@
 import Transaction from "../models/Transaction.js";
-import { v4 as uuidv4 } from "uuid";
-import { Types } from "mongoose";
 import transactions from "../testdata.js";
 
 export const createTransaction = async (req, res) => {

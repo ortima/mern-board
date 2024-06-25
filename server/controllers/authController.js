@@ -44,7 +44,7 @@ export const createUser = async (req, res) => {
     await user.save();
     res.status(201).json({ message: "User added", user });
   } catch (e) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", e });
   }
 };
 
@@ -76,6 +76,6 @@ export const loginUser = async (req, res) => {
     });
     res.json({ token, userId: user.id, email: user.email, name: user.name });
   } catch (e) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", e });
   }
 };

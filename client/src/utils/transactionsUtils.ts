@@ -1,32 +1,31 @@
 import { format } from "date-fns";
 import { Transaction } from "../store/transactionSlice";
 
+interface TransformEntities {
+  [key: string]: string;
+}
+
 export const formatDate = (dateString: string) => {
   return format(new Date(dateString), "yyyy-MM-dd");
 };
 
 export const transformTransactionType = (type: string) => {
-  switch (type) {
-    case "income":
-      return "Доходы";
-    case "expense":
-      return "Расходы";
-    default:
-      return type;
-  }
+  const types: TransformEntities = {
+    income: "Доходы",
+    expense: "Расходы",
+  };
+
+  return types[type] || type;
 };
 
 export const transformCategory = (category: string) => {
-  switch (category) {
-    case "school":
-      return "Школа";
-    case "work":
-      return "Работа";
-    case "university":
-      return "Университет";
-    default:
-      return category;
-  }
+  const categories: TransformEntities = {
+    school: "Школа",
+    work: "Работа",
+    university: "Университет",
+  };
+
+  return categories[category] || category;
 };
 
 export const formatAmount = (amount: number) => {

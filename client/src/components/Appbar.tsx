@@ -16,6 +16,7 @@ import {
 import { Notifications, Menu as MenuIcon } from "@mui/icons-material";
 import { useAppDispatch } from "../store";
 import { logoutUser } from "../store/authSlice";
+import { themeAnimationEntering } from "../constants";
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -35,10 +36,10 @@ const StyledAppBar = styled(MuiAppBar, {
   ...(open && {
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
+    transition: theme.transitions.create(
+      ["width", "margin"],
+      themeAnimationEntering(theme),
+    ),
   }),
 }));
 
@@ -76,6 +77,7 @@ const AppBarComponent: React.FC<AppBarProps> = ({ open, toggleDrawer }) => {
         >
           <MenuIcon />
         </IconButton>
+
         <Typography
           component="h1"
           variant="h6"
@@ -85,17 +87,20 @@ const AppBarComponent: React.FC<AppBarProps> = ({ open, toggleDrawer }) => {
         >
           Dashboard
         </Typography>
+
         <IconButton color="inherit">
           <Badge badgeContent={4} color="secondary">
             <Notifications />
           </Badge>
         </IconButton>
+
         <Box sx={{ flexGrow: 0 }}>
           <Tooltip title="Open settings">
             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
               <Avatar alt="User Avatar" src="#" />
             </IconButton>
           </Tooltip>
+
           <Menu
             sx={{ mt: "45px" }}
             id="menu-appbar"

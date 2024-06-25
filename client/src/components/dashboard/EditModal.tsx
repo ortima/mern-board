@@ -10,12 +10,13 @@ import {
 } from "@mui/material";
 import { Transaction } from "../../store/transactionSlice";
 import CustomSelectFormControl from "../shared/CustomSelectFormControl";
+import { categoryOptions, typeOptions } from "../../constants";
 
 interface EditModalProps {
   transaction: Transaction | null;
   open: boolean;
   onClose: () => void;
-  onSave: (updatedTransaction: Transaction) => void;
+  onSave: (editedTransaction: Transaction) => void;
 }
 
 const EditModal: React.FC<EditModalProps> = ({
@@ -51,6 +52,7 @@ const EditModal: React.FC<EditModalProps> = ({
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title">Edit Transaction</DialogTitle>
+
       <DialogContent>
         {editedTransaction && (
           <>
@@ -58,23 +60,18 @@ const EditModal: React.FC<EditModalProps> = ({
               label="Type"
               defaultValue={editedTransaction.type}
               name="type"
-              options={[
-                { value: "expense", label: "Расходы" },
-                { value: "income", label: "Доходы" },
-              ]}
+              options={typeOptions}
               onChange={handleFieldChange}
             />
+
             <CustomSelectFormControl
               label="Category"
               name="category"
               defaultValue={editedTransaction.category}
-              options={[
-                { value: "school", label: "Школа" },
-                { value: "work", label: "Работа" },
-                { value: "university", label: "Университет" },
-              ]}
+              options={categoryOptions}
               onChange={handleFieldChange}
             />
+
             <TextField
               margin="dense"
               name="description"
@@ -84,6 +81,7 @@ const EditModal: React.FC<EditModalProps> = ({
               value={editedTransaction.description}
               onChange={handleFieldChange}
             />
+
             <TextField
               name="amount"
               label="Amount"
@@ -95,10 +93,12 @@ const EditModal: React.FC<EditModalProps> = ({
           </>
         )}
       </DialogContent>
+
       <DialogActions>
         <Button onClick={onClose} color="secondary">
           Cancel
         </Button>
+
         <Button onClick={handleSave} color="primary">
           Save
         </Button>

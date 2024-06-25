@@ -24,6 +24,7 @@ const CustomSelectFormControl: React.FC<CustomSelectFormControlProps> = ({
   return (
     <FormControl fullWidth>
       <InputLabel>{label}</InputLabel>
+
       <Select defaultValue={defaultValue} name={name} onChange={onChange}>
         {options.map((option) => (
           <MenuItem key={option.value} value={option.value}>

@@ -3,6 +3,7 @@ import MuiDrawer from "@mui/material/Drawer";
 import { Toolbar, Divider, IconButton, List } from "@mui/material";
 import { ChevronLeft } from "@mui/icons-material";
 import { mainListItems } from "./dashboard/ListItems";
+import { themeAnimationEntering, themeAnimationLeaving } from "../constants";
 
 interface DrawerProps {
   open: boolean;
@@ -18,17 +19,17 @@ const Drawer = styled(MuiDrawer, {
     position: "relative",
     whiteSpace: "nowrap",
     width: drawerWidth,
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
+    transition: theme.transitions.create(
+      "width",
+      themeAnimationEntering(theme),
+    ),
     boxSizing: "border-box",
     ...(!open && {
       overflowX: "hidden",
-      transition: theme.transitions.create("width", {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }),
+      transition: theme.transitions.create(
+        "width",
+        themeAnimationLeaving(theme),
+      ),
       width: theme.spacing(7),
       [theme.breakpoints.up("sm")]: {
         width: theme.spacing(9),
@@ -51,7 +52,9 @@ const DrawerComponent: React.FC<DrawerProps> = ({ open, toggleDrawer }) => (
         <ChevronLeft />
       </IconButton>
     </Toolbar>
+
     <Divider />
+
     <List component="nav">
       {mainListItems}
       <Divider sx={{ my: 1 }} />

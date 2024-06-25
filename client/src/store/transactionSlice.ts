@@ -46,7 +46,7 @@ export const fetchTransactions = createAsyncThunk(
 
 export const addTransaction = createAsyncThunk(
   "transactions/addTransaction",
-  async (transaction: Omit<Transaction, "transactionId">) => {
+  async (transaction: Omit<Transaction, "transactionId" | "createdAt">) => {
     const token = getAuthToken();
     const response = await axios.post("/api/transactions", transaction, {
       headers: {
@@ -80,7 +80,7 @@ export const removeTransactions = createAsyncThunk(
   "transactions/removeTransactions",
   async (transactionIds: string[]) => {
     const token = getAuthToken();
-    const response = await axios.delete("/api/transactions", {
+    await axios.delete("/api/transactions", {
       data: { transactionIds },
       headers: {
         "Content-Type": "application/json",

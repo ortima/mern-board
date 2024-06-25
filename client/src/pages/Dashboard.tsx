@@ -14,7 +14,7 @@ function Copyright(props: any) {
       {"Copyright © "}
       <Link color="inherit" href="https://mui.com/">
         Your Website
-      </Link>{" "}
+      </Link>
       {new Date().getFullYear()}
     </Typography>
   );
@@ -41,6 +41,7 @@ export default function Dashboard() {
               <Typography variant="h6" gutterBottom>
                 Transactions
               </Typography>
+
               <AddModal />
             </Box>
             <Paper

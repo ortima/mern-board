@@ -92,6 +92,12 @@ module.exports = [
     },
   },
   {
+    files: ["client/src/store/*.ts "],
+    rules: {
+      "no-use-before-define": ["off"],
+    },
+  },
+  {
     files: ["server/**/*.js", "server/**/*.ts"],
     rules: {
       "no-console": ["off"],

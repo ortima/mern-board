@@ -21,8 +21,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     <ThemeProvider theme={defaultTheme}>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
+
         <AppBarComponent open={open} toggleDrawer={toggleDrawer} />
+
         <DrawerComponent open={open} toggleDrawer={toggleDrawer} />
+
         <Box
           component="main"
           sx={{
@@ -36,6 +39,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           }}
         >
           <Toolbar />
+
           {children}
         </Box>
       </Box>
