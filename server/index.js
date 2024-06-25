@@ -37,9 +37,6 @@ const startServer = async () => {
     });
     console.log("MongoDB Connected");
 
-    //просто вызов при старте
-    // await bulkWriteTransactions();
-
     app.listen(PORT, () => {
       console.log(`Server started on port: ${PORT}`);
     });

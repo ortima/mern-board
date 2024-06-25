@@ -1,5 +1,5 @@
 import Transaction from "../models/Transaction.js";
-import transactions from "../testdata.js";
+import { v4 as uuidv4 } from "uuid";
 
 export const createTransaction = async (req, res) => {
   try {
@@ -14,48 +14,27 @@ export const createTransaction = async (req, res) => {
   }
 };
 
-export const bulkWriteTransactions = async () => {
+export const bulkCreateTransactions = async (req, res) => {
   try {
-    // Вариант, когда мы можем написать какую операцию мы хотим произвести
+    const bulkOps = req.body.map((transaction) => ({
+      insertOne: {
+        document: {
+          ...transaction,
+          transactionId: uuidv4(),
+          userId: req.user._id,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      },
+    }));
 
-    // const bulkOps = [
-    //   {
-    //     insertOne: {
-    //       document: {
-    //         transactionId: uuidv4(),
-    //         userId: new Types.ObjectId("6672890f9c87a4ce571f03c0"),
-    //         type: "income",
-    //         category: "University",
-    //         description: "Bonus",
-    //         amount: 3000,
-    //         createdAt: new Date(),
-    //         updatedAt: new Date(),
-    //       },
-    //     },
-    //   },
-    //   {
-    //     insertOne: {
-    //       document: {
-    //         transactionId: uuidv4(),
-    //         userId: new Types.ObjectId("6672890f9c87a4ce571f03c0"),
-    //         type: "expense",
-    //         category: "Work",
-    //         description: "Dinner",
-    //         amount: 50,
-    //         createdAt: new Date(),
-    //         updatedAt: new Date(),
-    //       },
-    //     },
-    //   },
-    // ]
+    await Transaction.bulkWrite(bulkOps);
+    const status = bulkOps.map(() => "Success");
 
-    // const result = await Transaction.bulkWrite(bulkOps)
-
-    //insert many check
-    const result = await Transaction.insertMany(transactions);
-    console.log("Bulk operations completed successfully", result);
+    res.status(201).json({ status });
   } catch (error) {
     console.error("Error performing bulk operations", error.message);
+    res.status(400).json({ error: error.message });
   }
 };
 

@@ -5,6 +5,7 @@ import {
   getTransactionById,
   updateTransaction,
   deleteTransactions,
+  bulkCreateTransactions,
 } from "../controllers/transactionController.js";
 import authMiddleware from "./middleware.js";
 
@@ -14,6 +15,13 @@ const transactionRoute = "/transactions";
 
 // Create Transaction
 router.post(transactionRoute, authMiddleware, createTransaction);
+
+// Bulk operations
+router.post(
+  `${transactionRoute}/upload-data`,
+  authMiddleware,
+  bulkCreateTransactions,
+);
 
 // Get All Transactions
 router.get(transactionRoute, authMiddleware, getAllTransactions);
