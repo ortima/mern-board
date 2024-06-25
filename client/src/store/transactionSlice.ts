@@ -22,7 +22,7 @@ const initialState: TransactionsState = {
   error: null,
 };
 
-const getAuthToken = () => {
+export const getAuthToken = () => {
   const userDataString = localStorage.getItem("userData");
   if (userDataString) {
     const userData = JSON.parse(userDataString);
