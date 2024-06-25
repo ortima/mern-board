@@ -1,19 +1,12 @@
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import PrivateRoute from "./utils/ProtectedRoutes";
 import Registration from "./pages/Registration";
 import Dashboard from "./pages/Dashboard";
 import { Provider } from "react-redux";
 import { store } from "./store";
-import Shedule from "./pages/Shedule";
 
-function App() {
-
+const App = () => {
   return (
     <Provider store={store}>
       <BrowserRouter>
@@ -23,12 +16,10 @@ function App() {
           <Route path="/registration" element={<Registration />} />
           <Route element={<PrivateRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/shedule" element={<Shedule />} />
           </Route>
         </Routes>
       </BrowserRouter>
     </Provider>
-
   );
-}
+};
 export default App;

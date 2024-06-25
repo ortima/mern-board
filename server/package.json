@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "server": "nodemon --quiet server",
-    "client": "npm start --prefix client",
+    "client": "cd .. && cd client &&  npm start",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "keywords": [],

@@ -1,80 +1,63 @@
-import Box from '@mui/joy/Box';
-import Breadcrumbs from '@mui/joy/Breadcrumbs';
-import Link from '@mui/joy/Link';
-import Typography from '@mui/joy/Typography';
+import { Box, Typography, Container, Paper, Link } from "@mui/material";
+import Layout from "../components/Layout";
+import TableComponent from "../components/dashboard/Table";
+import AddModal from "../components/dashboard/AddModal";
 
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
-
-import OrderTable from '../components/OrderTable';
-import Layout from '../components/Layout';
-
-
+function Copyright(props: any) {
+  return (
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      align="center"
+      {...props}
+    >
+      {"Copyright © "}
+      <Link color="inherit" href="https://mui.com/">
+        Your Website
+      </Link>
+      {new Date().getFullYear()}
+    </Typography>
+  );
+}
 
 export default function Dashboard() {
   return (
     <Layout>
-      <Box
-        component="main"
-        className="MainContent"
-        sx={{
-          px: { xs: 2, md: 6 },
-          pt: {
-            xs: 'calc(12px + var(--Header-height))',
-            sm: 'calc(12px + var(--Header-height))',
-            md: 3,
-          },
-          pb: { xs: 2, sm: 2, md: 3 },
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          minWidth: 0,
-          height: '100dvh',
-          gap: 1,
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Breadcrumbs
-            size="sm"
-            aria-label="breadcrumbs"
-            separator={<ChevronRightRoundedIcon />}
-            sx={{ pl: 0 }}
-          >
-            <Link
-              underline="none"
-              color="neutral"
-              href="#some-link"
-              aria-label="Home"
-            >
-              <HomeRoundedIcon />
-            </Link>
-            <Link
-              underline="hover"
-              color="neutral"
-              href="#some-link"
-              fontSize={12}
-              fontWeight={500}
-            >
-              Dashboard
-            </Link>
-          </Breadcrumbs>
-        </Box>
+      <Box sx={{ display: "flex" }}>
         <Box
+          component="main"
           sx={{
-            display: 'flex',
-            mb: 1,
-            gap: 1,
-            flexDirection: { xs: 'column', sm: 'row' },
-            alignItems: { xs: 'start', sm: 'center' },
-            flexWrap: 'wrap',
-            justifyContent: 'space-between',
+            backgroundColor: (theme) =>
+              theme.palette.mode === "light"
+                ? theme.palette.grey[100]
+                : theme.palette.grey[900],
+            flexGrow: 1,
+            height: "100vh",
+            overflow: "auto",
           }}
         >
-          <Typography level="h2" component="h1">
-            Dashboard
-          </Typography>
+          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Typography variant="h6" gutterBottom>
+                Transactions
+              </Typography>
+
+              <AddModal />
+            </Box>
+            <Paper
+              sx={{
+                p: 2,
+                display: "flex",
+                flexDirection: "column",
+                height: "auto",
+                mt: 2,
+              }}
+            >
+              <TableComponent />
+            </Paper>
+            <Copyright sx={{ pt: 4 }} />
+          </Container>
         </Box>
-        <OrderTable />
       </Box>
     </Layout>
   );
