@@ -3,6 +3,7 @@ import Layout from "../components/Layout";
 import TableComponent from "../components/dashboard/Table";
 import AddModal from "../components/dashboard/AddModal";
 import UploadFileForm from "../components/shared/UploadFileForm";
+import CustomDeal from "../components/shared/CustomDeal";
 
 function Copyright(props: any) {
   return (
@@ -56,7 +57,10 @@ export default function Dashboard() {
             >
               <TableComponent />
             </Paper>
+            <CustomDeal />
+
             <UploadFileForm />
+
             <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>

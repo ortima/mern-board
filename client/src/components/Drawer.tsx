@@ -1,6 +1,6 @@
 import { styled } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
-import { Toolbar, Divider, IconButton, List, Button } from "@mui/material";
+import { Toolbar, Divider, IconButton, List } from "@mui/material";
 import { ChevronLeft } from "@mui/icons-material";
 import { mainListItems } from "./dashboard/ListItems";
 import { themeAnimationEntering, themeAnimationLeaving } from "../constants";
@@ -57,11 +57,6 @@ const DrawerComponent: React.FC<DrawerProps> = ({ open, toggleDrawer }) => (
       {mainListItems}
       <Divider sx={{ my: 1 }} />
     </List>
-    <Button>
-      <a href="/template.ods" download>
-        Скачать шаблон
-      </a>
-    </Button>
   </Drawer>
 );
 
