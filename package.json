@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "prepare": "husky install",
-    "lint": "eslint '*/**/*.{ts,js,tsx,jsx}'",
+    "lint": "npx eslint .",
     "format": "prettier --write '*/**/*.{ts,js,tsx,jsx,json,css,scss,md}'"
   },
   "keywords": [],
@@ -14,10 +14,10 @@
   "license": "ISC",
   "devDependencies": {
     "@eslint/compat": "^1.1.0",
-    "@eslint/js": "^9.5.0",
+    "@eslint/js": "^8.56.0",
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
-    "eslint": "^9.5.0",
+    "eslint": "^8.56.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsdoc": "^48.2.12",
     "eslint-plugin-react": "^7.34.3",
