@@ -1,26 +1,8 @@
-import { Box, Typography, Container, Paper, Link } from "@mui/material";
+import { Box, Typography, Container, Paper } from "@mui/material";
 import Layout from "../components/Layout";
 import TableComponent from "../components/dashboard/Table";
 import AddModal from "../components/dashboard/AddModal";
-import UploadFileForm from "../components/shared/UploadFileForm";
 import CustomDeal from "../components/shared/CustomDeal";
-
-function Copyright(props: any) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>
-      {new Date().getFullYear()}
-    </Typography>
-  );
-}
 
 export default function Dashboard() {
   return (
@@ -57,11 +39,8 @@ export default function Dashboard() {
             >
               <TableComponent />
             </Paper>
+
             <CustomDeal />
-
-            <UploadFileForm />
-
-            <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>
       </Box>
