@@ -1,25 +1,29 @@
 /* eslint-disable no-console */
-// UploadFileForm.tsx
-
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
+import { Box, Button, List, ListItem, Typography } from "@mui/material";
 import * as XLSX from "xlsx";
-import { Button, Input } from "@mui/material";
-import { getAuthToken } from "../../store/transactionSlice";
-
-interface UploadStatus {
-  record: number;
-  status: string;
-}
+import { useDropzone } from "react-dropzone";
+import { RootState, useAppDispatch } from "../../store";
+import { uploadFile, fetchTransactions } from "../../store/transactionSlice";
+import { useSelector } from "react-redux";
 
 const UploadFileForm: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [uploadStatus, setUploadStatus] = useState<UploadStatus[]>([]);
+  const [uploadErrors, setUploadErrors] = useState<
+    { record: number; error: string }[]
+  >([]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFile(e.target.files[0]);
-    }
-  };
+  const dispatch = useAppDispatch();
+  const uploadStatus = useSelector(
+    (state: RootState) => state.transactions.uploadStatus,
+  );
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    setFile(acceptedFiles[0]);
+    setUploadErrors([]);
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   const handleUpload = async () => {
     if (!file) {
@@ -35,42 +39,13 @@ const UploadFileForm: React.FC = () => {
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
         const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet);
 
-        const chunkSize = 10;
-        for (let i = 0; i < jsonData.length; i += chunkSize) {
-          const chunk = jsonData.slice(i, i + chunkSize);
-
-          try {
-            const token = getAuthToken(); // Получение токена
-            const response = await fetch("/api/transactions/upload-data", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`, // Добавление токена в заголовок
-              },
-              body: JSON.stringify(chunk),
-            });
-
-            if (!response.ok) {
-              throw new Error(`Server error: ${response.statusText}`);
-            }
-
-            const result = await response.json();
-            const statusUpdate: UploadStatus[] = result.status.map(
-              (status: string, index: number) => ({
-                record: i + index + 1,
-                status,
-              }),
-            );
-
-            setUploadStatus((prevStatus) => [...prevStatus, ...statusUpdate]);
-          } catch (error) {
-            console.error("Error uploading data:", error);
-            const errorStatus: UploadStatus[] = chunk.map((_, index) => ({
-              record: i + index + 1,
-              status: "Failed",
-            }));
-            setUploadStatus((prevStatus) => [...prevStatus, ...errorStatus]);
-          }
+        try {
+          const statuses = await dispatch(uploadFile(jsonData)).unwrap();
+          console.log("File uploaded successfully");
+          console.log(statuses);
+          await dispatch(fetchTransactions()).unwrap();
+        } catch (error) {
+          console.error("Error uploading file:", error);
         }
       }
     };
@@ -83,15 +58,55 @@ const UploadFileForm: React.FC = () => {
   };
 
   return (
-    <div>
-      <Input type="file" onChange={handleFileChange} />
-      <Button onClick={handleUpload}>Upload</Button>
-      <div>
-        {uploadStatus.map((status, index) => (
-          <div key={index}>{`Record ${status.record}: ${status.status}`}</div>
-        ))}
-      </div>
-    </div>
+    <Box>
+      <Box
+        {...getRootProps()}
+        sx={{
+          border: "2px dashed grey",
+          padding: 2,
+          textAlign: "center",
+          cursor: "pointer",
+        }}
+      >
+        <input {...getInputProps()} />
+        {isDragActive ? (
+          <Typography>Drop the files here ...</Typography>
+        ) : (
+          <Typography>Drag 'n' drop some files here</Typography>
+        )}
+      </Box>
+      {file && (
+        <Box mt={2}>
+          <Typography variant="body1">Selected file: {file.name}</Typography>
+        </Box>
+      )}
+      <Button
+        onClick={handleUpload}
+        variant="contained"
+        color="primary"
+        sx={{ mt: 2 }}
+      >
+        Upload
+      </Button>
+      <Box mt={2} sx={{ maxHeight: 300, overflowY: "auto" }}>
+        <List>
+          {uploadStatus.map((status) => (
+            <ListItem key={status.record}>
+              {`Record ${status.record}: ${
+                status.status === "success"
+                  ? "Success"
+                  : `Failed (${status.error})`
+              }`}
+            </ListItem>
+          ))}
+          {uploadErrors.map((error, index) => (
+            <ListItem key={index}>
+              {`Record ${error.record}: Failed (${error.error})`}
+            </ListItem>
+          ))}
+        </List>
+      </Box>
+    </Box>
   );
 };
 
