@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RootState } from ".";
 
 export interface Transaction {
   transactionId: string;
@@ -10,16 +11,24 @@ export interface Transaction {
   createdAt: string;
 }
 
+interface UploadStatus {
+  record: number;
+  status: string;
+  error?: string;
+}
+
 interface TransactionsState {
   transactions: Transaction[];
   loading: boolean;
   error: string | null;
+  uploadStatus: UploadStatus[];
 }
 
 const initialState: TransactionsState = {
   transactions: [],
   loading: false,
   error: null,
+  uploadStatus: [],
 };
 
 export const getAuthToken = () => {
@@ -91,6 +100,56 @@ export const removeTransactions = createAsyncThunk(
   },
 );
 
+export const uploadFile = createAsyncThunk<
+  UploadStatus[],
+  any[],
+  { state: RootState }
+>("transactions/uploadFile", async (jsonData, { rejectWithValue }) => {
+  const token = getAuthToken();
+  let statuses: UploadStatus[] = [];
+
+  try {
+    for (let i = 0; i < jsonData.length; i++) {
+      const item = jsonData[i];
+      const amount = parseFloat(item.amount);
+      if (isNaN(amount) || amount <= 0) {
+        statuses.push({
+          record: i + 1,
+          status: "failed",
+          error: "Invalid amount",
+        });
+      } else {
+        const response = await axios.post(
+          "/api/transactions/upload-data",
+          [item],
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+        if (!response.status.toString().startsWith("2")) {
+          throw new Error(`Server error: ${response.statusText}`);
+        }
+        statuses.push({
+          record: i + 1,
+          status: "success",
+        });
+      }
+    }
+    return statuses;
+  } catch (error: any) {
+    return rejectWithValue(
+      statuses.map((status, index) => ({
+        record: index + 1,
+        status: "failed",
+        error: error.message,
+      })),
+    );
+  }
+});
+
 const transactionsSlice = createSlice({
   name: "transactions",
   initialState,
@@ -161,6 +220,19 @@ const transactionsSlice = createSlice({
       )
       .addCase(updateTransactionAsync.rejected, (state, action) => {
         state.error = action.error.message || "Failed to update transaction";
+      })
+      .addCase(uploadFile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.uploadStatus = action.payload;
+      })
+      .addCase(uploadFile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(uploadFile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.uploadStatus = [];
       });
   },
 });
