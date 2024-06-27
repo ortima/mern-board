@@ -1,6 +1,6 @@
 import { Box, Typography, Container, Paper } from "@mui/material";
 import { TableComponent } from "../components/dashboard";
-import { AddModal } from "../components/modals";
+import { AddModal, EditModal } from "../components/modals";
 import { CustomDeal } from "../components/shared";
 import { Layout } from "../components/layout";
 
@@ -25,6 +25,7 @@ export default function Dashboard() {
               </Typography>
 
               <AddModal />
+              <EditModal />
             </Box>
             <Paper
               sx={{

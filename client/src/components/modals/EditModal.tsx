@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import {
   Dialog,
   DialogActions,
@@ -11,16 +11,38 @@ import {
 import { CustomSelectFormControl } from "../shared";
 import { categoryOptions, typeOptions } from "../../constants";
 import { Transaction } from "../../@types/stateInterfaces";
-import { EditModalProps } from "../../@types/componentsInterfaces";
+import { Edit } from "@mui/icons-material";
+import { useSelector } from "react-redux";
+import { RootState, useAppDispatch } from "../../store";
+import { updateTransactionAsync } from "../../store/transactionSlice";
 
-export const EditModal: React.FC<EditModalProps> = ({
-  transaction,
-  open,
-  onClose,
-  onSave,
-}) => {
+export const EditModal: React.FC = () => {
+  const [open, setOpen] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+
   const [editedTransaction, setEditedTransaction] =
-    useState<Transaction | null>(transaction);
+    useState<Transaction | null>(null);
+
+  const selectedTransactionIds = useSelector(
+    (state: RootState) => state.transactions.selectedTransactionIds,
+  );
+
+  const transactions = useSelector(
+    (state: RootState) => state.transactions.transactions,
+  );
+
+  useEffect(() => {
+    if (selectedTransactionIds.length == 1) {
+      const transaction = transactions.find(
+        (transaction) =>
+          transaction.transactionId === selectedTransactionIds[0],
+      );
+
+      setEditedTransaction(transaction || null);
+    } else {
+      setEditedTransaction(null);
+    }
+  }, [selectedTransactionIds, transactions]);
 
   const handleFieldChange = (
     e:
@@ -37,22 +59,37 @@ export const EditModal: React.FC<EditModalProps> = ({
     });
   };
 
-  const handleSave = () => {
+  const handleSubmit = () => {
     if (editedTransaction) {
-      onSave(editedTransaction);
+      dispatch(updateTransactionAsync(editedTransaction));
+      setOpen(false);
     }
   };
 
   return (
-    <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
-      <DialogTitle id="form-dialog-title">Edit Transaction</DialogTitle>
+    <>
+      {selectedTransactionIds.length == 1 && (
+        <Button
+          variant="outlined"
+          startIcon={<Edit />}
+          onClick={() => setOpen(true)}
+        >
+          Edit Transaction
+        </Button>
+      )}
 
-      <DialogContent>
-        {editedTransaction && (
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogTitle id="form-dialog-title">Edit Transaction</DialogTitle>
+
+        <DialogContent>
           <>
             <CustomSelectFormControl
               label="Type"
-              defaultValue={editedTransaction.type}
+              value={editedTransaction ? editedTransaction.type : ""}
               name="type"
               options={typeOptions}
               onChange={handleFieldChange}
@@ -61,7 +98,7 @@ export const EditModal: React.FC<EditModalProps> = ({
             <CustomSelectFormControl
               label="Category"
               name="category"
-              defaultValue={editedTransaction.category}
+              value={editedTransaction ? editedTransaction.category : ""}
               options={categoryOptions}
               onChange={handleFieldChange}
             />
@@ -72,7 +109,9 @@ export const EditModal: React.FC<EditModalProps> = ({
               label="Description"
               type="text"
               fullWidth
-              value={editedTransaction.description}
+              defaultValue={
+                editedTransaction ? editedTransaction.description : ""
+              }
               onChange={handleFieldChange}
             />
 
@@ -81,22 +120,22 @@ export const EditModal: React.FC<EditModalProps> = ({
               label="Amount"
               type="number"
               fullWidth
-              value={editedTransaction.amount}
+              defaultValue={editedTransaction ? editedTransaction.amount : ""}
               onChange={handleFieldChange}
             />
           </>
-        )}
-      </DialogContent>
+        </DialogContent>
 
-      <DialogActions>
-        <Button onClick={onClose} color="secondary">
-          Cancel
-        </Button>
+        <DialogActions>
+          <Button onClick={() => setOpen(false)} color="secondary">
+            Cancel
+          </Button>
 
-        <Button onClick={handleSave} color="primary">
-          Save
-        </Button>
-      </DialogActions>
-    </Dialog>
+          <Button onClick={handleSubmit} color="primary">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };

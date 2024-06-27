@@ -1,5 +1,4 @@
 import { SelectChangeEvent } from "@mui/material";
-import { Transaction } from "./stateInterfaces";
 import { AppBarProps as MuiAppBarProps } from "@mui/material";
 
 //Title.tsx
@@ -42,19 +41,11 @@ export interface CustomAlertProps {
   onClose?: () => void;
 }
 
-//EditModal
-export interface EditModalProps {
-  transaction: Transaction | null;
-  open: boolean;
-  onClose: () => void;
-  onSave: (editedTransaction: Transaction) => void;
-}
-
 //CustomSelectFormControl
 export interface CustomSelectFormControlProps {
   label: string;
   name: string;
-  defaultValue: string;
+  value: string;
   options: Array<{ value: string; label: string }>;
   onChange?: (e: SelectChangeEvent<string>, child: React.ReactNode) => void;
 }
