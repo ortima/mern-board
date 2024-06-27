@@ -3,12 +3,11 @@ import { CustomSelectFormControlProps } from "../../@types/componentsInterfaces"
 
 export const CustomSelectFormControl: React.FC<
   CustomSelectFormControlProps
-> = ({ label, name, defaultValue, options, onChange }) => {
+> = ({ label, name, value, options, onChange }) => {
   return (
     <FormControl fullWidth>
       <InputLabel>{label}</InputLabel>
-
-      <Select defaultValue={defaultValue} name={name} onChange={onChange}>
+      <Select value={value} name={name} onChange={onChange}>
         {options.map((option) => (
           <MenuItem key={option.value} value={option.value}>
             {option.label}

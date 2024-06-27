@@ -103,7 +103,7 @@ export const AddModal = () => {
           <Stack spacing={2} sx={{ padding: 2 }}>
             <CustomSelectFormControl
               label="Type"
-              defaultValue="expense"
+              value="expense"
               name="type"
               options={typeOptions}
             />
@@ -111,7 +111,7 @@ export const AddModal = () => {
             <CustomSelectFormControl
               label="Category"
               name="category"
-              defaultValue="school"
+              value="school"
               options={categoryOptions}
             />
 
