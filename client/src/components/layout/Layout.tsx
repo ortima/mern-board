@@ -7,6 +7,7 @@ import {
   Toolbar,
 } from "@mui/material";
 import { AppBarComponent, Sidebar } from ".";
+import { CustomAlert } from "../shared";
 
 const defaultTheme = createTheme();
 
@@ -43,6 +44,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
           {children}
         </Box>
+        <CustomAlert />
       </Box>
     </ThemeProvider>
   );

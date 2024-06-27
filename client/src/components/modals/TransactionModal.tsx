@@ -6,13 +6,11 @@ import {
   DialogContent,
   Button,
   FormControl,
-  InputLabel,
-  Input,
   Stack,
   TextField,
 } from "@mui/material";
 import { Add, Edit } from "@mui/icons-material";
-import { CustomSelectFormControl, CustomAlert } from "../shared";
+import { CustomSelectFormControl } from "../shared";
 import {
   categoryOptions,
   initialTransactionState,
@@ -116,13 +114,6 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
           </DialogActions>
         </form>
       </Dialog>
-
-      <CustomAlert
-        open={alert.open}
-        severity={alert.severity}
-        message={alert.message}
-        onClose={handleAlertClose}
-      />
     </>
   );
 };
