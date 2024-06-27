@@ -2,11 +2,13 @@ import { configureStore } from "@reduxjs/toolkit";
 import transactionSlice from "./transactionSlice";
 import { useDispatch } from "react-redux";
 import authSlice from "./authSlice";
+import alertSlice from "./alertSlice";
 
 export const store = configureStore({
   reducer: {
     transactions: transactionSlice,
     auth: authSlice,
+    alert: alertSlice,
   },
 });
 
