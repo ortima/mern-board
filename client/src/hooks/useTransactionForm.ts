@@ -8,6 +8,7 @@ import {
 import { NewTransaction, Transaction } from "../@types/stateInterfaces";
 import { CustomAlertProps, Form } from "../@types/componentsInterfaces";
 import { SelectChangeEvent } from "@mui/material";
+import { showAlert } from "../store/alertSlice";
 
 export const useTransactionForm = (isEdit: boolean) => {
   const dispatch = useAppDispatch();
@@ -58,11 +59,13 @@ export const useTransactionForm = (isEdit: boolean) => {
     const userId = userData ? userData.userId : null;
 
     if (!userId) {
-      setAlert({
-        open: true,
-        severity: "error",
-        message: "User ID not found. Please log in again.",
-      });
+      dispatch(
+        showAlert({
+          message: "User ID not found. Please log in again.",
+          open: true,
+          severity: "warning",
+        }),
+      );
       return;
     }
 
@@ -87,24 +90,30 @@ export const useTransactionForm = (isEdit: boolean) => {
 
       if (response.meta.requestStatus === "fulfilled") {
         setOpen(false);
-        setAlert({
-          open: true,
-          severity: "success",
-          message: `Transaction ${isEdit ? "updated" : "added"} successfully!`,
-        });
+        dispatch(
+          showAlert({
+            message: `Transaction ${isEdit ? "updated" : "added"} successfully!`,
+            severity: "success",
+            open: true,
+          }),
+        );
       } else {
-        setAlert({
-          open: true,
-          severity: "error",
-          message: `Failed to ${isEdit ? "update" : "add"} transaction. Please try again.`,
-        });
+        dispatch(
+          showAlert({
+            message: `Failed to ${isEdit ? "update" : "add"} transaction. Please try again.`,
+            severity: "error",
+            open: true,
+          }),
+        );
       }
     } catch (error) {
-      setAlert({
-        open: true,
-        severity: "error",
-        message: "An error occurred. Please try again.",
-      });
+      dispatch(
+        showAlert({
+          message: "An error occurred. Please try again.",
+          severity: "error",
+          open: true,
+        }),
+      );
     }
   };
 

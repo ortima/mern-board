@@ -4,8 +4,8 @@ import * as XLSX from "xlsx";
 import { useDropzone } from "react-dropzone";
 import { useAppDispatch } from "../../store";
 import { uploadFile, fetchTransactions } from "../../store/transactionSlice";
-import { CustomAlert } from "./CustomAlert";
-import { CustomAlertProps } from "../../@types/componentsInterfaces";
+import { showAlert } from "../../store/alertSlice";
+import { RootState } from "../../store";
 
 interface UploadStatus {
   record: number;
@@ -14,20 +14,11 @@ interface UploadStatus {
 
 export const UploadFileForm: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [alert, setAlert] = useState<CustomAlertProps>({
-    open: false,
-    severity: "info",
-    message: "",
-  });
   const [uploadErrors, setUploadErrors] = useState<UploadStatus[]>([]);
   const [successfulUploads, setSuccessfulUploads] = useState<UploadStatus[]>(
     [],
   );
   const dispatch = useAppDispatch();
-
-  const handleAlertClose = useCallback(() => {
-    setAlert((prevAlert) => ({ ...prevAlert, open: false }));
-  }, []);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setFile(acceptedFiles[0]);
@@ -39,7 +30,13 @@ export const UploadFileForm: React.FC = () => {
 
   const handleUpload = useCallback(async () => {
     if (!file) {
-      setAlert({ open: true, message: "No file selected", severity: "error" });
+      dispatch(
+        showAlert({
+          open: true,
+          message: "No file selected",
+          severity: "error",
+        }),
+      );
       return;
     }
 
@@ -76,30 +73,37 @@ export const UploadFileForm: React.FC = () => {
             ? "File uploaded successfully"
             : "File uploaded with errors";
 
-          setAlert({
-            open: true,
-            message: alertMessage,
-            severity: statuses.every((status) => status.status === "success")
-              ? "success"
-              : "warning",
-          });
-          await dispatch(fetchTransactions()).unwrap();
+          dispatch(
+            showAlert({
+              open: true,
+              severity: statuses.every((status) => status.status === "success")
+                ? "success"
+                : "warning",
+              message: alertMessage,
+            }),
+          );
+
+          dispatch(fetchTransactions());
         } catch (error) {
-          setAlert({
-            open: true,
-            message: `Error uploading file: ${error}`,
-            severity: "error",
-          });
+          dispatch(
+            showAlert({
+              open: true,
+              severity: "error",
+              message: `Error uploading file: ${error}`,
+            }),
+          );
         }
       }
     };
 
     reader.onerror = (error) => {
-      setAlert({
-        open: true,
-        message: `Error uploading file: ${error}`,
-        severity: "error",
-      });
+      dispatch(
+        showAlert({
+          open: true,
+          severity: "error",
+          message: `Error uploading file: ${error}`,
+        }),
+      );
     };
 
     reader.readAsArrayBuffer(file);
@@ -107,12 +111,6 @@ export const UploadFileForm: React.FC = () => {
 
   return (
     <Box>
-      <CustomAlert
-        open={alert.open}
-        severity={alert.severity}
-        message={alert.message}
-        onClose={handleAlertClose}
-      />
       <Box
         {...getRootProps()}
         sx={{
