@@ -4,6 +4,7 @@ import { RootState } from ".";
 import { categoryOptions, typeOptions } from "../constants";
 import {
   Transaction,
+  NewTransaction,
   TransactionsState,
   UploadStatus,
 } from "../@types/stateInterfaces";
@@ -40,7 +41,7 @@ export const fetchTransactions = createAsyncThunk(
 
 export const addTransaction = createAsyncThunk(
   "transactions/addTransaction",
-  async (transaction: Omit<Transaction, "transactionId" | "createdAt">) => {
+  async (transaction: NewTransaction) => {
     const token = getAuthToken();
     const response = await axios.post("/api/transactions", transaction, {
       headers: {
