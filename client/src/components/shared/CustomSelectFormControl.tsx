@@ -6,8 +6,14 @@ export const CustomSelectFormControl: React.FC<
 > = ({ label, name, value, options, onChange }) => {
   return (
     <FormControl fullWidth>
-      <InputLabel>{label}</InputLabel>
-      <Select value={value} name={name} onChange={onChange}>
+      <InputLabel id={label}>{label}</InputLabel>
+      <Select
+        labelId={label}
+        label={label}
+        value={value}
+        name={name}
+        onChange={onChange}
+      >
         {options.map((option) => (
           <MenuItem key={option.value} value={option.value}>
             {option.label}
