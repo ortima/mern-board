@@ -9,6 +9,13 @@ export interface Transaction {
   createdAt: string;
 }
 
+export interface NewTransaction {
+  type: string;
+  category: string;
+  description: string;
+  amount: number | null;
+}
+
 export interface UploadStatus {
   record: number;
   status: string;
