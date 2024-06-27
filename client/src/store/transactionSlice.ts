@@ -13,6 +13,7 @@ const initialState: TransactionsState = {
   loading: false,
   error: null,
   uploadStatus: [],
+  selectedTransactionIds: [],
 };
 
 export const getAuthToken = () => {
@@ -155,6 +156,12 @@ const transactionsSlice = createSlice({
   name: "transactions",
   initialState,
   reducers: {
+    setSelectedTransactionIds(
+      state,
+      action: PayloadAction<(string | number)[]>,
+    ) {
+      state.selectedTransactionIds = action.payload;
+    },
     removeTransaction(state, action: PayloadAction<string>) {
       state.transactions = state.transactions.filter(
         (transaction) => transaction.transactionId !== action.payload,
@@ -241,7 +248,11 @@ const transactionsSlice = createSlice({
   },
 });
 
-export const { removeTransaction, updateTransaction, clearUploadStatus } =
-  transactionsSlice.actions;
+export const {
+  setSelectedTransactionIds,
+  removeTransaction,
+  updateTransaction,
+  clearUploadStatus,
+} = transactionsSlice.actions;
 
 export default transactionsSlice.reducer;

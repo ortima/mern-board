@@ -20,6 +20,7 @@ export interface TransactionsState {
   loading: boolean;
   error: string | null;
   uploadStatus: UploadStatus[];
+  selectedTransactionIds: (string | number)[];
 }
 
 // authSlice
