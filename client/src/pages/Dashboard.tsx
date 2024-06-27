@@ -1,8 +1,8 @@
 import { Box, Typography, Container, Paper } from "@mui/material";
 import { TableComponent } from "../components/dashboard";
-import { AddModal, EditModal } from "../components/modals";
 import { CustomDeal } from "../components/shared";
 import { Layout } from "../components/layout";
+import { TransactionModal } from "../components/modals";
 
 export default function Dashboard() {
   return (
@@ -24,8 +24,8 @@ export default function Dashboard() {
                 Transactions
               </Typography>
 
-              <AddModal />
-              <EditModal />
+              <TransactionModal isEdit={true} />
+              <TransactionModal isEdit={false} />
             </Box>
             <Paper
               sx={{
