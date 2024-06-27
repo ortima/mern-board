@@ -1,4 +1,5 @@
 import { Theme } from "@mui/material";
+import { NewTransaction } from "../@types/stateInterfaces";
 
 export const themeAnimationLeaving = (theme: Theme) => ({
   easing: theme.transitions.easing.sharp,
@@ -30,3 +31,10 @@ export const COLUMNS = [
   { name: "description", title: "Описание" },
   { name: "amount", title: "Сумма" },
 ];
+
+export const initialTransactionState: NewTransaction = {
+  type: "",
+  category: "",
+  description: "",
+  amount: null,
+};
