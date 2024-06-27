@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   SpeedDialAction,
@@ -7,16 +7,19 @@ import {
   Typography,
 } from "@mui/material";
 import { UploadFile, FileCopy } from "@mui/icons-material";
-import CustomUploadFileForm from "./AddFileModal";
-import UploadFileForm from "./UploadFileForm";
+import { useDispatch } from "react-redux";
+import { clearUploadStatus } from "../../store/transactionSlice";
+import { UploadFileForm } from ".";
+import { AddFileModal } from "../modals";
 
 const actions = [
   { icon: <FileCopy />, name: "Download template", action: "download" },
   { icon: <UploadFile />, name: "Upload .xl file", action: "upload" },
 ];
 
-const CustomDeal = () => {
+export const CustomDeal = () => {
   const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
 
   const handleActionClick = (action: string) => {
     if (action === "download") {
@@ -31,6 +34,7 @@ const CustomDeal = () => {
 
   const handleClose = () => {
     setOpen(false);
+    dispatch(clearUploadStatus());
   };
 
   return (
@@ -59,7 +63,7 @@ const CustomDeal = () => {
         ))}
       </SpeedDial>
 
-      <CustomUploadFileForm open={open} onClose={handleClose}>
+      <AddFileModal open={open} onClose={handleClose}>
         <Box sx={{ width: 400 }}>
           <Typography variant="h6" component="h2" gutterBottom>
             Upload .xl file
@@ -67,9 +71,7 @@ const CustomDeal = () => {
 
           <UploadFileForm />
         </Box>
-      </CustomUploadFileForm>
+      </AddFileModal>
     </Box>
   );
 };
-
-export default CustomDeal;

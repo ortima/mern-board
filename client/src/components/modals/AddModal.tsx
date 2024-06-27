@@ -1,5 +1,3 @@
-// TODO: передалать на mui/material( для совместимости с кастомным алертом)
-
 import { useCallback, useState } from "react";
 import {
   Button,
@@ -14,22 +12,12 @@ import { Add } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
 import { addTransaction } from "../../store/transactionSlice";
 import { AppDispatch } from "../../store";
-import CustomSelectFormControl from "../shared/CustomSelectFormControl";
-import { CustomAlert, CustomAlertProps } from "../shared/CustomAlert";
+import { CustomSelectFormControl } from "../shared";
+import { CustomAlert } from "../shared/CustomAlert";
 import { categoryOptions, typeOptions } from "../../constants";
+import { Form, CustomAlertProps } from "../../@types/componentsInterfaces";
 
-interface FormElements extends HTMLFormControlsCollection {
-  type: HTMLSelectElement | HTMLInputElement | any;
-  category: HTMLSelectElement;
-  description: HTMLInputElement;
-  amount: HTMLInputElement;
-}
-
-interface Form extends HTMLFormElement {
-  readonly elements: FormElements;
-}
-
-export default function AddModal() {
+export const AddModal = () => {
   const dispatch: AppDispatch = useDispatch();
   const [open, setOpen] = useState<boolean>(false);
   const [alert, setAlert] = useState<CustomAlertProps>({
@@ -149,4 +137,4 @@ export default function AddModal() {
       />
     </>
   );
-}
+};

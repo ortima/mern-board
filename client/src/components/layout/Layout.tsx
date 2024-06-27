@@ -6,12 +6,13 @@ import {
   createTheme,
   Toolbar,
 } from "@mui/material";
-import AppBarComponent from "./Appbar";
-import DrawerComponent from "./Drawer";
+import { AppBarComponent, Sidebar } from ".";
 
 const defaultTheme = createTheme();
 
-const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const Layout: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [open, setOpen] = useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
@@ -24,7 +25,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
         <AppBarComponent open={open} toggleDrawer={toggleDrawer} />
 
-        <DrawerComponent open={open} toggleDrawer={toggleDrawer} />
+        <Sidebar open={open} toggleDrawer={toggleDrawer} />
 
         <Box
           component="main"
@@ -46,5 +47,3 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     </ThemeProvider>
   );
 };
-
-export default Layout;

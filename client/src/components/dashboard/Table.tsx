@@ -19,22 +19,15 @@ import { RootState, useAppDispatch } from "../../store";
 import {
   fetchTransactions,
   removeTransactions,
-  Transaction,
   updateTransactionAsync,
 } from "../../store/transactionSlice";
 import { Button } from "@mui/material";
 import { formatTransaction } from "../../utils/transactionsUtils";
-import EditModal from "./EditModal";
+import { Transaction } from "../../@types/stateInterfaces";
+import { COLUMNS } from "../../constants";
+import { EditModal } from "../modals";
 
-const COLUMNS = [
-  { name: "createdAt", title: "Дата" },
-  { name: "type", title: "Тип" },
-  { name: "category", title: "Категория" },
-  { name: "description", title: "Описание" },
-  { name: "amount", title: "Сумма" },
-];
-
-const TableComponent: React.FC = () => {
+export const TableComponent: React.FC = () => {
   const dispatch = useAppDispatch();
   const transactions = useSelector(
     (state: RootState) => state.transactions.transactions,
@@ -137,5 +130,3 @@ const TableComponent: React.FC = () => {
     </>
   );
 };
-
-export default TableComponent;

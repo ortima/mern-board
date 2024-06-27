@@ -20,3 +20,13 @@ export const typeOptions = [
   { value: "expense", label: "Расходы" },
   { value: "income", label: "Доходы" },
 ];
+
+export const drawerWidth = 240;
+
+export const COLUMNS = [
+  { name: "createdAt", title: "Дата" },
+  { name: "type", title: "Тип" },
+  { name: "category", title: "Категория" },
+  { name: "description", title: "Описание" },
+  { name: "amount", title: "Сумма" },
+];

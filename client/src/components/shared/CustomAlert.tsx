@@ -1,18 +1,12 @@
 import { Snackbar, Alert } from "@mui/material";
+import { CustomAlertProps } from "../../@types/componentsInterfaces";
 
-export interface CustomAlertProps {
-  open: boolean;
-  severity: "error" | "warning" | "info" | "success";
-  message: string;
-  onClose?: () => void;
-}
-
-export function CustomAlert({
+export const CustomAlert = ({
   open,
   severity,
   message,
   onClose,
-}: CustomAlertProps) {
+}: CustomAlertProps) => {
   return (
     <Snackbar open={open} onClose={onClose}>
       <Alert onClose={onClose} severity={severity} sx={{ width: "100%" }}>
@@ -20,4 +14,4 @@ export function CustomAlert({
       </Alert>
     </Snackbar>
   );
-}
+};

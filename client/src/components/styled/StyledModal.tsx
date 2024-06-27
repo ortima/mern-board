@@ -1,9 +1,9 @@
-import * as React from "react";
+import { forwardRef } from "react";
 import clsx from "clsx";
 import { styled, css } from "@mui/system";
 import { Modal as BaseModal } from "@mui/base/Modal";
 
-const Backdrop = React.forwardRef<
+const Backdrop = forwardRef<
   HTMLDivElement,
   { open?: boolean; className: string }
 >((props, ref) => {
@@ -30,7 +30,7 @@ const grey = {
   900: "#1C2025",
 };
 
-const Modal = styled(BaseModal)`
+export const Modal = styled(BaseModal)`
   position: fixed;
   z-index: 1300;
   inset: 0;
@@ -39,7 +39,7 @@ const Modal = styled(BaseModal)`
   justify-content: center;
 `;
 
-const StyledBackdrop = styled(Backdrop)`
+export const StyledBackdrop = styled(Backdrop)`
   z-index: -1;
   position: fixed;
   inset: 0;
@@ -47,7 +47,7 @@ const StyledBackdrop = styled(Backdrop)`
   -webkit-tap-highlight-color: transparent;
 `;
 
-const ModalContent = styled("div")(
+export const ModalContent = styled("div")(
   ({ theme }) => css`
     font-family: "IBM Plex Sans", sans-serif;
     font-weight: 500;
@@ -80,28 +80,3 @@ const ModalContent = styled("div")(
     }
   `,
 );
-interface AddFileModalProps {
-  open: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
-}
-
-const AddFileModal: React.FC<AddFileModalProps> = ({
-  open,
-  onClose,
-  children,
-}) => {
-  return (
-    <Modal
-      aria-labelledby="unstyled-modal-title"
-      aria-describedby="unstyled-modal-description"
-      open={open}
-      onClose={onClose}
-      slots={{ backdrop: StyledBackdrop }}
-    >
-      <ModalContent>{children}</ModalContent>
-    </Modal>
-  );
-};
-
-export default AddFileModal;

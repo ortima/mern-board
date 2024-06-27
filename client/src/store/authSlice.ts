@@ -1,19 +1,6 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-
-interface UserData {
-  token: string;
-  userId: string;
-  email?: string;
-  name?: string;
-}
-
-interface AuthState {
-  userData: UserData | null;
-  loading: boolean;
-  errorMessage: string | null;
-  successMessage: string | null;
-}
+import { AuthState, UserData } from "../@types/stateInterfaces";
 
 const loadUserDataFromLocalStorage = (): UserData | null => {
   const userDataString = localStorage.getItem("userData");

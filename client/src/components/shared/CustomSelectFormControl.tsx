@@ -1,26 +1,9 @@
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-} from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { CustomSelectFormControlProps } from "../../@types/componentsInterfaces";
 
-interface CustomSelectFormControlProps {
-  label: string;
-  name: string;
-  defaultValue: string;
-  options: Array<{ value: string; label: string }>;
-  onChange?: (e: SelectChangeEvent<string>, child: React.ReactNode) => void;
-}
-
-const CustomSelectFormControl: React.FC<CustomSelectFormControlProps> = ({
-  label,
-  name,
-  defaultValue,
-  options,
-  onChange,
-}) => {
+export const CustomSelectFormControl: React.FC<
+  CustomSelectFormControlProps
+> = ({ label, name, defaultValue, options, onChange }) => {
   return (
     <FormControl fullWidth>
       <InputLabel>{label}</InputLabel>
@@ -35,5 +18,3 @@ const CustomSelectFormControl: React.FC<CustomSelectFormControlProps> = ({
     </FormControl>
   );
 };
-
-export default CustomSelectFormControl;

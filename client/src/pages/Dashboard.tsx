@@ -1,8 +1,8 @@
 import { Box, Typography, Container, Paper } from "@mui/material";
-import Layout from "../components/Layout";
-import TableComponent from "../components/dashboard/Table";
-import AddModal from "../components/dashboard/AddModal";
-import CustomDeal from "../components/shared/CustomDeal";
+import { TableComponent } from "../components/dashboard";
+import { AddModal } from "../components/modals";
+import { CustomDeal } from "../components/shared";
+import { Layout } from "../components/layout";
 
 export default function Dashboard() {
   return (
@@ -12,9 +12,7 @@ export default function Dashboard() {
           component="main"
           sx={{
             backgroundColor: (theme) =>
-              theme.palette.mode === "light"
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
+              theme.palette.grey[theme.palette.mode === "light" ? 100 : 900],
             flexGrow: 1,
             height: "100vh",
             overflow: "auto",

@@ -1,13 +1,7 @@
 import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { Dashboard, PieChart } from "@mui/icons-material";
 import { Link } from "react-router-dom";
-
-interface RoutesProps {
-  id: number;
-  url: string;
-  text: string;
-  icon: React.ReactNode;
-}
+import { RoutesProps } from "../../@types/componentsInterfaces";
 
 const routes: RoutesProps[] = [
   {

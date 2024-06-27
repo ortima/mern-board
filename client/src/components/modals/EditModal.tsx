@@ -8,18 +8,12 @@ import {
   TextField,
   SelectChangeEvent,
 } from "@mui/material";
-import { Transaction } from "../../store/transactionSlice";
-import CustomSelectFormControl from "../shared/CustomSelectFormControl";
+import { CustomSelectFormControl } from "../shared";
 import { categoryOptions, typeOptions } from "../../constants";
+import { Transaction } from "../../@types/stateInterfaces";
+import { EditModalProps } from "../../@types/componentsInterfaces";
 
-interface EditModalProps {
-  transaction: Transaction | null;
-  open: boolean;
-  onClose: () => void;
-  onSave: (editedTransaction: Transaction) => void;
-}
-
-const EditModal: React.FC<EditModalProps> = ({
+export const EditModal: React.FC<EditModalProps> = ({
   transaction,
   open,
   onClose,
@@ -106,5 +100,3 @@ const EditModal: React.FC<EditModalProps> = ({
     </Dialog>
   );
 };
-
-export default EditModal;

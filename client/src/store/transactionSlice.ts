@@ -1,28 +1,12 @@
 import axios from "axios";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from ".";
-
-export interface Transaction {
-  transactionId: string;
-  type: string;
-  category: string;
-  description: string;
-  amount: number;
-  createdAt: string;
-}
-
-interface UploadStatus {
-  record: number;
-  status: string;
-  error?: string;
-}
-
-interface TransactionsState {
-  transactions: Transaction[];
-  loading: boolean;
-  error: string | null;
-  uploadStatus: UploadStatus[];
-}
+import { categoryOptions, typeOptions } from "../constants";
+import {
+  Transaction,
+  TransactionsState,
+  UploadStatus,
+} from "../@types/stateInterfaces";
 
 const initialState: TransactionsState = {
   transactions: [],
@@ -108,6 +92,11 @@ export const uploadFile = createAsyncThunk<
   const token = getAuthToken();
   let statuses: UploadStatus[] = [];
 
+  const isValidType = (type: string) =>
+    typeOptions.some((option) => option.value === type);
+  const isValidCategory = (category: string) =>
+    categoryOptions.some((option) => option.value === category);
+
   try {
     for (let i = 0; i < jsonData.length; i++) {
       const item = jsonData[i];
@@ -117,6 +106,18 @@ export const uploadFile = createAsyncThunk<
           record: i + 1,
           status: "failed",
           error: "Invalid amount",
+        });
+      } else if (!isValidType(item.type)) {
+        statuses.push({
+          record: i + 1,
+          status: "failed",
+          error: "Invalid type",
+        });
+      } else if (!isValidCategory(item.category)) {
+        statuses.push({
+          record: i + 1,
+          status: "failed",
+          error: "Invalid category",
         });
       } else {
         const response = await axios.post(
@@ -172,6 +173,9 @@ const transactionsSlice = createSlice({
       if (index !== -1) {
         state.transactions[index] = action.payload;
       }
+    },
+    clearUploadStatus(state) {
+      state.uploadStatus = [];
     },
   },
   extraReducers: (builder) => {
@@ -237,7 +241,7 @@ const transactionsSlice = createSlice({
   },
 });
 
-export const { removeTransaction, updateTransaction } =
+export const { removeTransaction, updateTransaction, clearUploadStatus } =
   transactionsSlice.actions;
 
 export default transactionsSlice.reducer;
