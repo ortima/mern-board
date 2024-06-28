@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, useCallback } from "react";
+import { useState, ChangeEvent } from "react";
 import { useSelector } from "react-redux";
 import { RootState, useAppDispatch } from "../store";
 import {
@@ -6,18 +6,14 @@ import {
   updateTransactionAsync,
 } from "../store/transactionSlice";
 import { NewTransaction, Transaction } from "../@types/stateInterfaces";
-import { CustomAlertProps, Form } from "../@types/componentsInterfaces";
 import { SelectChangeEvent } from "@mui/material";
 import { showAlert } from "../store/alertSlice";
+import { Form } from "../@types/componentsInterfaces";
 
 export const useTransactionForm = (isEdit: boolean) => {
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState<boolean>(false);
-  const [alert, setAlert] = useState<CustomAlertProps>({
-    open: false,
-    severity: "info",
-    message: "",
-  });
+
   const [transaction, setTransaction] = useState<
     NewTransaction | Transaction | null
   >(null);
@@ -43,10 +39,6 @@ export const useTransactionForm = (isEdit: boolean) => {
       [name]: value,
     });
   };
-
-  const handleAlertClose = useCallback(() => {
-    setAlert({ ...alert, open: false });
-  }, [alert]);
 
   const handleSubmit = async (event: React.FormEvent<Form>) => {
     event.preventDefault();
@@ -121,7 +113,6 @@ export const useTransactionForm = (isEdit: boolean) => {
     open,
     setOpen,
     alert,
-    handleAlertClose,
     transaction,
     setTransaction,
     handleFieldChange,

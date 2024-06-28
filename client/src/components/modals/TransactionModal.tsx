@@ -25,8 +25,6 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
   const {
     open,
     setOpen,
-    alert,
-    handleAlertClose,
     transaction,
     handleFieldChange,
     handleSubmit,
@@ -45,7 +43,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
     } else {
       setTransaction(initialTransactionState);
     }
-  }, [isEdit, selectedTransactionIds, transactions]);
+  }, [isEdit, selectedTransactionIds, transactions, setTransaction]);
 
   return (
     <>

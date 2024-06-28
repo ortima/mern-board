@@ -5,7 +5,6 @@ import { useDropzone } from "react-dropzone";
 import { useAppDispatch } from "../../store";
 import { uploadFile, fetchTransactions } from "../../store/transactionSlice";
 import { showAlert } from "../../store/alertSlice";
-import { RootState } from "../../store";
 
 interface UploadStatus {
   record: number;
