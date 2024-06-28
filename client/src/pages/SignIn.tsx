@@ -5,7 +5,6 @@ import {
   TextField,
   FormControlLabel,
   Checkbox,
-  Link,
   Box,
   Paper,
   Grid,
@@ -13,40 +12,18 @@ import {
 } from "@mui/material";
 import { LockOutlined } from "@mui/icons-material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../store";
 import { loginUser } from "../store/authSlice";
 import { useForm, Controller } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { showAlert } from "../store/alertSlice";
+import { FormDataSignIn, formSchema } from "../schemas/formSchema";
+import { signInFields } from "../constants";
 
 const defaultTheme = createTheme();
 
-const schema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  remember: z.boolean().optional(),
-});
-
-type FormData = z.infer<typeof schema>;
-
-const fieldConfig = [
-  {
-    name: "email" as const,
-    label: "Email",
-    id: "email",
-    type: "text",
-  },
-  {
-    name: "password" as const,
-    label: "Password",
-    id: "password",
-    type: "password",
-  },
-];
-
-export default function SignInSide() {
+export default function SignIn() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -54,8 +31,8 @@ export default function SignInSide() {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
+  } = useForm<FormDataSignIn>({
+    resolver: zodResolver(formSchema.signIn),
     defaultValues: {
       email: "",
       password: "",
@@ -63,7 +40,7 @@ export default function SignInSide() {
     },
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: FormDataSignIn) => {
     try {
       await dispatch(
         loginUser({
@@ -134,7 +111,7 @@ export default function SignInSide() {
               onSubmit={handleSubmit(onSubmit)}
               sx={{ mt: 1 }}
             >
-              {fieldConfig.map(({ id, name, label, type }) => (
+              {signInFields.map(({ id, name, label, type }) => (
                 <Controller
                   key={name}
                   name={name}
@@ -176,14 +153,10 @@ export default function SignInSide() {
               </Button>
               <Grid container>
                 <Grid item xs>
-                  <Link href="#" variant="body2">
-                    Forgot password?
-                  </Link>
+                  <Link to="#">Forgot password?</Link>
                 </Grid>
                 <Grid item>
-                  <Link href="/signup" variant="body2">
-                    {"Don't have an account? Sign Up"}
-                  </Link>
+                  <Link to="/signup">{"Don't have an account? Sign Up"}</Link>
                 </Grid>
               </Grid>
             </Box>

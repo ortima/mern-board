@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Login from "./pages/Login";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
 import PrivateRoute from "./utils/ProtectedRoutes";
-import Registration from "./pages/Registration";
 import Dashboard from "./pages/Dashboard";
 import { Provider } from "react-redux";
 import { store } from "./store";
@@ -13,9 +13,9 @@ const App = () => {
       <BrowserRouter>
         <AppLayout>
           <Routes>
-            <Route path="/signin" element={<Login />} />
+            <Route path="/signin" element={<SignIn />} />
             <Route path="/" element={<Navigate to="/signin" replace />} />
-            <Route path="/signup" element={<Registration />} />
+            <Route path="/signup" element={<SignUp />} />
             <Route element={<PrivateRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
             </Route>
