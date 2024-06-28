@@ -1,15 +1,17 @@
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import { FormControlLabel } from "@mui/material";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
-import Paper from "@mui/material/Paper";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
+import {
+  Avatar,
+  Button,
+  CssBaseline,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  Link,
+  Box,
+  Paper,
+  Grid,
+  Typography,
+} from "@mui/material";
+import { LockOutlined } from "@mui/icons-material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../store";
@@ -18,7 +20,6 @@ import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { showAlert } from "../store/alertSlice";
-import { CustomAlert } from "../components/shared";
 
 const defaultTheme = createTheme();
 
@@ -30,6 +31,21 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
+const fieldConfig = [
+  {
+    name: "email" as const,
+    label: "Email",
+    id: "email",
+    type: "text",
+  },
+  {
+    name: "password" as const,
+    label: "Password",
+    id: "password",
+    type: "password",
+  },
+];
+
 export default function SignInSide() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -40,32 +56,36 @@ export default function SignInSide() {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      email: "",
+      password: "",
+      remember: false,
+    },
   });
 
   const onSubmit = async (data: FormData) => {
     try {
-      const response = await dispatch(
+      await dispatch(
         loginUser({
           email: data.email,
           password: data.password,
         }),
-      );
-      if (response.payload) {
-        dispatch(
-          showAlert({
-            message: "Success! You log in",
-            open: true,
-            severity: "success",
-          }),
-        );
-        navigate("/dashboard");
-      }
-    } catch (error) {
+      ).unwrap();
+
       dispatch(
         showAlert({
-          message: `Login failed, ${error}`,
+          message: "Success! You log in",
           open: true,
           severity: "success",
+        }),
+      );
+      navigate("/dashboard");
+    } catch (error: any) {
+      dispatch(
+        showAlert({
+          message: error,
+          open: true,
+          severity: "error",
         }),
       );
     }
@@ -74,7 +94,6 @@ export default function SignInSide() {
   return (
     <ThemeProvider theme={defaultTheme}>
       <Grid container component="main" sx={{ height: "100vh" }}>
-        <CustomAlert />
         <CssBaseline />
         <Grid
           item
@@ -104,7 +123,7 @@ export default function SignInSide() {
             }}
           >
             <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-              <LockOutlinedIcon />
+              <LockOutlined />
             </Avatar>
             <Typography component="h1" variant="h5">
               Sign in
@@ -115,43 +134,26 @@ export default function SignInSide() {
               onSubmit={handleSubmit(onSubmit)}
               sx={{ mt: 1 }}
             >
-              <Controller
-                name="email"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="email"
-                    label="Email Address"
-                    autoComplete="email"
-                    autoFocus
-                    error={!!errors.email}
-                    helperText={errors.email ? errors.email.message : ""}
-                  />
-                )}
-              />
-              <Controller
-                name="password"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
-                    error={!!errors.password}
-                    helperText={errors.password ? errors.password.message : ""}
-                  />
-                )}
-              />
+              {fieldConfig.map(({ id, name, label, type }) => (
+                <Controller
+                  key={name}
+                  name={name}
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      margin="normal"
+                      required
+                      fullWidth
+                      type={type}
+                      id={id}
+                      label={label}
+                      error={!!errors[name]}
+                      helperText={errors[name] ? errors[name]?.message : ""}
+                    />
+                  )}
+                />
+              ))}
               <FormControlLabel
                 control={
                   <Controller
@@ -179,7 +181,7 @@ export default function SignInSide() {
                   </Link>
                 </Grid>
                 <Grid item>
-                  <Link href="#" variant="body2">
+                  <Link href="/signup" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>
