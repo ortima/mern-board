@@ -19,9 +19,24 @@ const initialState: AuthState = {
 
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
-  async (userData: { name: string; email: string; password: string }) => {
-    const response = await axios.post("/api/registration", userData);
-    return response.data;
+  async (
+    userData: { name: string; email: string; password: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      const response = await axios.post("/api/registration", userData);
+      return response.data;
+    } catch (error: any) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        return rejectWithValue(error.response.data.message);
+      } else {
+        return rejectWithValue("An unexpected error occurred.");
+      }
+    }
   },
 );
 
@@ -84,7 +99,7 @@ const authSlice = createSlice({
       state.successMessage = "User registered successfully!";
     });
     builder.addCase(registerUser.rejected, (state, action) => {
-      state.errorMessage = "Error registering user: " + action.error.message;
+      state.errorMessage = action.payload as string;
     });
     builder.addCase(loginUser.fulfilled, (state, action) => {
       state.userData = action.payload;
