@@ -38,3 +38,51 @@ export const initialTransactionState: NewTransaction = {
   description: "",
   amount: null,
 };
+
+export const signUpFields = [
+  {
+    name: "name" as const,
+    label: "First Name",
+    id: "name",
+    type: "text",
+  },
+  {
+    name: "secondName" as const,
+    label: "Second Name",
+    id: "secondName",
+    type: "text",
+  },
+  {
+    name: "email" as const,
+    label: "Email",
+    id: "email",
+    type: "text",
+  },
+  {
+    name: "password" as const,
+    label: "Password",
+    id: "password",
+    type: "password",
+  },
+  {
+    name: "passwordConfirm" as const,
+    label: "Confirm Password",
+    id: "passwordConfirm",
+    type: "password",
+  },
+];
+
+export const signInFields = [
+  {
+    name: "email" as const,
+    label: "Email",
+    id: "email",
+    type: "text",
+  },
+  {
+    name: "password" as const,
+    label: "Password",
+    id: "password",
+    type: "password",
+  },
+];
