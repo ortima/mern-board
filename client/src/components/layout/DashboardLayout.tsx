@@ -7,11 +7,10 @@ import {
   Toolbar,
 } from "@mui/material";
 import { AppBarComponent, Sidebar } from ".";
-import { CustomAlert } from "../shared";
 
 const defaultTheme = createTheme();
 
-export const Layout: React.FC<{ children: React.ReactNode }> = ({
+export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [open, setOpen] = useState(true);
@@ -44,7 +43,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
           {children}
         </Box>
-        <CustomAlert />
       </Box>
     </ThemeProvider>
   );
