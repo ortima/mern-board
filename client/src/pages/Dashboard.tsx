@@ -1,12 +1,12 @@
 import { Box, Typography, Container, Paper } from "@mui/material";
 import { TableComponent } from "../components/dashboard";
 import { CustomDeal } from "../components/shared";
-import { Layout } from "../components/layout";
+import { DashboardLayout } from "../components/layout";
 import { TransactionModal } from "../components/modals";
 
 export default function Dashboard() {
   return (
-    <Layout>
+    <DashboardLayout>
       <Box sx={{ display: "flex" }}>
         <Box
           component="main"
@@ -43,6 +43,6 @@ export default function Dashboard() {
           </Container>
         </Box>
       </Box>
-    </Layout>
+    </DashboardLayout>
   );
 }

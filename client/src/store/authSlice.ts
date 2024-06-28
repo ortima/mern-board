@@ -27,15 +27,30 @@ export const registerUser = createAsyncThunk(
 
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
-  async (userData: { email: string; password: string }, { dispatch }) => {
-    const response = await axios.post("/api/login", userData);
-    const { token, userId, email, name } = response.data;
-    localStorage.setItem(
-      "userData",
-      JSON.stringify({ token, userId, email, name }),
-    );
-    dispatch(login({ token, userId, email, name }));
-    return { token, userId, email, name };
+  async (
+    userData: { email: string; password: string },
+    { dispatch, rejectWithValue },
+  ) => {
+    try {
+      const response = await axios.post("/api/login", userData);
+      const { token, userId, email, name } = response.data;
+      localStorage.setItem(
+        "userData",
+        JSON.stringify({ token, userId, email, name }),
+      );
+      dispatch(login({ token, userId, email, name }));
+      return { token, userId, email, name };
+    } catch (error: any) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        return rejectWithValue(error.response.data.message);
+      } else {
+        return rejectWithValue("An unexpected error occurred.");
+      }
+    }
   },
 );
 
@@ -76,7 +91,7 @@ const authSlice = createSlice({
       state.successMessage = "User logged in successfully";
     });
     builder.addCase(loginUser.rejected, (state, action) => {
-      state.errorMessage = "Error logging in: " + action.error.message;
+      state.errorMessage = action.payload as string;
     });
     builder.addCase(logoutUser.fulfilled, (state) => {
       state.userData = null;
