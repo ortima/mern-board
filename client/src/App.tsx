@@ -5,6 +5,7 @@ import Registration from "./pages/Registration";
 import Dashboard from "./pages/Dashboard";
 import { Provider } from "react-redux";
 import { store } from "./store";
+import Login1 from "./pages/Login1";
 
 const App = () => {
   return (
@@ -12,6 +13,7 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/login1" element={<Login1 />} />
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/registration" element={<Registration />} />
           <Route element={<PrivateRoute />}>

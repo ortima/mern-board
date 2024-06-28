@@ -1,263 +1,193 @@
-// TODO: передалать на mui/material( для совместимости с кастомным алертом)
-
-import { useEffect, useState } from "react";
-import { CssVarsProvider, useColorScheme } from "@mui/joy/styles";
-import {
-  GlobalStyles,
-  CssBaseline,
-  Box,
-  Button,
-  Checkbox,
-  FormControl,
-  FormLabel,
-  Input,
-  Typography,
-  Stack,
-  IconButtonProps,
-  IconButton,
-  Snackbar,
-  SnackbarProps,
-} from "@mui/joy";
-import { Link, useNavigate } from "react-router-dom";
-import { loginUser } from "../store/authSlice";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import TextField from "@mui/material/TextField";
+import { FormControlLabel } from "@mui/material";
+import Checkbox from "@mui/material/Checkbox";
+import Link from "@mui/material/Link";
+import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Typography from "@mui/material/Typography";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../store";
-import {
-  Key,
-  BadgeRounded,
-  LightModeRounded,
-  DarkModeRounded,
-} from "@mui/icons-material";
+import { loginUser } from "../store/authSlice";
+import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { showAlert } from "../store/alertSlice";
+import { CustomAlert } from "../components/shared";
 
-interface FormElements extends HTMLFormControlsCollection {
-  email: HTMLInputElement;
-  password: HTMLInputElement;
-  confirmPassword: HTMLInputElement;
-  persistent: HTMLInputElement;
-}
-interface SignInFormElement extends HTMLFormElement {
-  readonly elements: FormElements;
-}
+const defaultTheme = createTheme();
 
-function ColorSchemeToggle(props: IconButtonProps) {
-  const { onClick, ...other } = props;
-  const { mode, setMode } = useColorScheme();
-  const [mounted, setMounted] = useState(false);
+const schema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  remember: z.boolean().optional(),
+});
 
-  useEffect(() => setMounted(true), []);
+type FormData = z.infer<typeof schema>;
 
-  return (
-    <IconButton
-      aria-label="toggle light/dark mode"
-      size="sm"
-      variant="outlined"
-      disabled={!mounted}
-      onClick={(event) => {
-        setMode(mode === "light" ? "dark" : "light");
-        onClick?.(event);
-      }}
-      {...other}
-    >
-      {mode === "light" ? <DarkModeRounded /> : <LightModeRounded />}
-    </IconButton>
-  );
-}
-
-export default function Login() {
+export default function SignInSide() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
-  const [snackbarInfo, setSnackbarInfo] = useState<{
-    message: string;
-    color: SnackbarProps["color"];
-  }>({
-    message: "text",
-    color: "neutral",
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
   });
 
-  const handleSubmit = async (event: React.FormEvent<SignInFormElement>) => {
-    event.preventDefault();
-    const formElements = event.currentTarget.elements;
-    const data = {
-      email: formElements.email.value,
-      password: formElements.password.value,
-      persistent: formElements.persistent.checked,
-    };
-
+  const onSubmit = async (data: FormData) => {
     try {
       const response = await dispatch(
-        loginUser({ email: data.email, password: data.password }),
+        loginUser({
+          email: data.email,
+          password: data.password,
+        }),
       );
-
-      if (response.meta.requestStatus === "fulfilled") {
-        setOpen(true);
-        setSnackbarInfo({ message: "Success! You log in", color: "success" });
-        setTimeout(() => {
-          setOpen(false);
-          navigate("/dashboard");
-        }, 2000);
-      } else {
-        setOpen(true);
-        setSnackbarInfo({
-          message: "Incorrect emai or password",
-          color: "danger",
-        });
+      if (response.payload) {
+        dispatch(
+          showAlert({
+            message: "Success! You log in",
+            open: true,
+            severity: "success",
+          }),
+        );
+        navigate("/dashboard");
       }
     } catch (error) {
-      setOpen(true);
-      setSnackbarInfo({ message: "Error", color: "danger" });
+      dispatch(
+        showAlert({
+          message: `Login failed, ${error}`,
+          open: true,
+          severity: "success",
+        }),
+      );
     }
   };
 
   return (
-    <CssVarsProvider defaultMode="dark" disableTransitionOnChange>
-      <CssBaseline />
-      <GlobalStyles
-        styles={{
-          ":root": {
-            "--Form-maxWidth": "800px",
-            "--Transition-duration": "0.4s",
-          },
-        }}
-      />
-      <Box
-        sx={(theme) => ({
-          width: { xs: "100%", md: "50vw" },
-          transition: "width var(--Transition-duration)",
-          transitionDelay: "calc(var(--Transition-duration) + 0.1s)",
-          position: "relative",
-          zIndex: 1,
-          display: "flex",
-          justifyContent: "flex-end",
-          backdropFilter: "blur(12px)",
-          backgroundColor: "rgba(255 255 255 / 0.2)",
-          [theme.getColorSchemeSelector("dark")]: {
-            backgroundColor: "rgba(19 19 24 / 0.4)",
-          },
-        })}
-      >
-        <Box
+    <ThemeProvider theme={defaultTheme}>
+      <Grid container component="main" sx={{ height: "100vh" }}>
+        <CustomAlert />
+        <CssBaseline />
+        <Grid
+          item
+          xs={false}
+          sm={4}
+          md={7}
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            minHeight: "100dvh",
-            width: "100%",
-            px: 2,
+            backgroundImage:
+              "url(https://images.unsplash.com/photo-1527181152855-fc03fc7949c8?auto=format&w=1000&dpr=2)",
+            backgroundRepeat: "no-repeat",
+            backgroundColor: (t) =>
+              t.palette.mode === "light"
+                ? t.palette.grey[50]
+                : t.palette.grey[900],
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
-        >
+        />
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
           <Box
-            component="header"
             sx={{
-              py: 3,
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
-            <Box sx={{ gap: 2, display: "flex", alignItems: "center" }}>
-              <IconButton variant="soft" color="primary" size="sm">
-                <BadgeRounded />
-              </IconButton>
-              <Typography level="title-lg">FORTECH</Typography>
-            </Box>
-            <Snackbar
-              autoHideDuration={2000}
-              onClose={() => setOpen(false)}
-              open={open}
-              color={snackbarInfo.color}
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            >
-              {snackbarInfo.message}
-            </Snackbar>
-            <ColorSchemeToggle />
-          </Box>
-          <Box
-            component="main"
-            sx={{
-              my: "auto",
-              py: 2,
-              pb: 5,
+              my: 8,
+              mx: 4,
               display: "flex",
               flexDirection: "column",
-              gap: 2,
-              width: 400,
-              maxWidth: "100%",
-              mx: "auto",
-              borderRadius: "sm",
-              "& form": {
-                display: "flex",
-                flexDirection: "column",
-                gap: 2,
-              },
-              [`& .MuiFormLabel-asterisk`]: {
-                visibility: "hidden",
-              },
+              alignItems: "center",
             }}
           >
-            <Typography textAlign={"center"} fontWeight={700} fontSize={"24px"}>
-              Login
+            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              Sign in
             </Typography>
-
-            <Stack gap={4} sx={{ mt: 2 }}>
-              <form onSubmit={handleSubmit}>
-                <FormControl required>
-                  <FormLabel>Email</FormLabel>
-                  <Input type="text" name="email" />
-                </FormControl>
-                <FormControl required>
-                  <FormLabel>Password</FormLabel>
-                  <Input
-                    type="password"
-                    name="password"
-                    startDecorator={<Key />}
+            <Box
+              component="form"
+              noValidate
+              onSubmit={handleSubmit(onSubmit)}
+              sx={{ mt: 1 }}
+            >
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    autoComplete="email"
+                    autoFocus
+                    error={!!errors.email}
+                    helperText={errors.email ? errors.email.message : ""}
                   />
-                </FormControl>
-                <Stack gap={4} sx={{ mt: 2 }}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Checkbox size="sm" label="Remember me" name="persistent" />
-                    <Link to="/registration">Create account</Link>
-                  </Box>
-                  <Button type="submit" fullWidth>
-                    Sign in
-                  </Button>
-                </Stack>
-              </form>
-            </Stack>
+                )}
+              />
+              <Controller
+                name="password"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="password"
+                    autoComplete="current-password"
+                    error={!!errors.password}
+                    helperText={errors.password ? errors.password.message : ""}
+                  />
+                )}
+              />
+              <FormControlLabel
+                control={
+                  <Controller
+                    name="remember"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox {...field} color="primary" />
+                    )}
+                  />
+                }
+                label="Remember me"
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Sign In
+              </Button>
+              <Grid container>
+                <Grid item xs>
+                  <Link href="#" variant="body2">
+                    Forgot password?
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Link href="#" variant="body2">
+                    {"Don't have an account? Sign Up"}
+                  </Link>
+                </Grid>
+              </Grid>
+            </Box>
           </Box>
-          <Box component="footer" sx={{ py: 3 }}>
-            <Typography level="body-xs" textAlign="center">
-              © ortima {new Date().getFullYear()}
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
-      <Box
-        sx={(theme) => ({
-          height: "100%",
-          position: "fixed",
-          right: 0,
-          top: 0,
-          bottom: 0,
-          left: { xs: 0, md: "50vw" },
-          transition:
-            "background-image var(--Transition-duration), left var(--Transition-duration) !important",
-          transitionDelay: "calc(var(--Transition-duration) + 0.1s)",
-          backgroundColor: "background.level1",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          backgroundImage:
-            "url(https://images.unsplash.com/photo-1527181152855-fc03fc7949c8?auto=format&w=1000&dpr=2)",
-          [theme.getColorSchemeSelector("dark")]: {
-            backgroundImage:
-              "url(https://images.unsplash.com/photo-1572072393749-3ca9c8ea0831?auto=format&w=1000&dpr=2)",
-          },
-        })}
-      />
-    </CssVarsProvider>
+        </Grid>
+      </Grid>
+    </ThemeProvider>
   );
 }
