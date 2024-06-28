@@ -1,3 +1,4 @@
 export { AppBarComponent } from "./Appbar";
 export { Sidebar } from "./Sidebar";
-export { Layout } from "./Layout";
+export { DashboardLayout } from "./DashboardLayout";
+export { AppLayout } from "./AppLayout";

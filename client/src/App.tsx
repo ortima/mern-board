@@ -5,21 +5,22 @@ import Registration from "./pages/Registration";
 import Dashboard from "./pages/Dashboard";
 import { Provider } from "react-redux";
 import { store } from "./store";
-import Login1 from "./pages/Login1";
+import { AppLayout } from "./components/layout";
 
 const App = () => {
   return (
     <Provider store={store}>
       <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/login1" element={<Login1 />} />
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/registration" element={<Registration />} />
-          <Route element={<PrivateRoute />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-          </Route>
-        </Routes>
+        <AppLayout>
+          <Routes>
+            <Route path="/signin" element={<Login />} />
+            <Route path="/" element={<Navigate to="/signin" replace />} />
+            <Route path="/signup" element={<Registration />} />
+            <Route element={<PrivateRoute />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Route>
+          </Routes>
+        </AppLayout>
       </BrowserRouter>
     </Provider>
   );
