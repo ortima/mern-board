@@ -1,6 +1,5 @@
 import {
   Avatar,
-  Button,
   CssBaseline,
   TextField,
   FormControlLabel,
@@ -10,22 +9,24 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 import { LockOutlined } from "@mui/icons-material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link, useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../store";
+import { RootState, useAppDispatch } from "../store";
 import { loginUser } from "../store/authSlice";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { showAlert } from "../store/alertSlice";
 import { FormDataSignIn, formSchema } from "../schemas/formSchema";
 import { signInFields } from "../constants";
+import { useSelector } from "react-redux";
 
 const defaultTheme = createTheme();
 
 export default function SignIn() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const isLoading = useSelector((state: RootState) => state.auth.loading);
 
   const {
     handleSubmit,
@@ -48,24 +49,8 @@ export default function SignIn() {
           password: data.password,
         }),
       ).unwrap();
-
-      dispatch(
-        showAlert({
-          message: "Success! You log in",
-          open: true,
-          severity: "success",
-        }),
-      );
       navigate("/dashboard");
-    } catch (error: any) {
-      dispatch(
-        showAlert({
-          message: error,
-          open: true,
-          severity: "error",
-        }),
-      );
-    }
+    } catch (err) {}
   };
 
   return (
@@ -111,7 +96,7 @@ export default function SignIn() {
               onSubmit={handleSubmit(onSubmit)}
               sx={{ mt: 1 }}
             >
-              {signInFields.map(({ id, name, label, type }) => (
+              {signInFields.map(({ id, name, label, type, autoComplete }) => (
                 <Controller
                   key={name}
                   name={name}
@@ -127,6 +112,8 @@ export default function SignIn() {
                       label={label}
                       error={!!errors[name]}
                       helperText={errors[name] ? errors[name]?.message : ""}
+                      autoComplete={autoComplete}
+                      disabled={isLoading}
                     />
                   )}
                 />
@@ -143,14 +130,16 @@ export default function SignIn() {
                 }
                 label="Remember me"
               />
-              <Button
+              <LoadingButton
                 type="submit"
                 fullWidth
                 variant="contained"
+                loading={isLoading}
+                disabled={isLoading}
                 sx={{ mt: 3, mb: 2 }}
               >
                 Sign In
-              </Button>
+              </LoadingButton>
               <Grid container>
                 <Grid item xs>
                   <Link to="#">Forgot password?</Link>

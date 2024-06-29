@@ -1,6 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { AuthState, UserData } from "../@types/stateInterfaces";
+import { showAlert } from "./alertSlice";
 
 const loadUserDataFromLocalStorage = (): UserData | null => {
   const userDataString = localStorage.getItem("userData");
@@ -13,29 +14,32 @@ const loadUserDataFromLocalStorage = (): UserData | null => {
 const initialState: AuthState = {
   userData: loadUserDataFromLocalStorage(),
   loading: false,
-  errorMessage: null,
-  successMessage: null,
+  message: null,
 };
 
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (
     userData: { name: string; email: string; password: string },
-    { rejectWithValue },
+    { dispatch, rejectWithValue },
   ) => {
     try {
       const response = await axios.post("/api/registration", userData);
+      dispatch(
+        showAlert({
+          message: "User registered successfully!",
+          severity: "success",
+          open: true,
+        }),
+      );
       return response.data;
     } catch (error: any) {
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        return rejectWithValue(error.response.data.message);
-      } else {
-        return rejectWithValue("An unexpected error occurred.");
-      }
+      const errorMessage =
+        error.response?.data?.message || "An unexpected error occurred.";
+      dispatch(
+        showAlert({ message: errorMessage, severity: "error", open: true }),
+      );
+      return rejectWithValue(errorMessage);
     }
   },
 );
@@ -54,17 +58,21 @@ export const loginUser = createAsyncThunk(
         JSON.stringify({ token, userId, email, name }),
       );
       dispatch(login({ token, userId, email, name }));
+      dispatch(
+        showAlert({
+          message: "User logged in successfully",
+          severity: "success",
+          open: true,
+        }),
+      );
       return { token, userId, email, name };
     } catch (error: any) {
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        return rejectWithValue(error.response.data.message);
-      } else {
-        return rejectWithValue("An unexpected error occurred.");
-      }
+      const errorMessage =
+        error.response?.data?.message || "An unexpected error occurred.";
+      dispatch(
+        showAlert({ message: errorMessage, severity: "error", open: true }),
+      );
+      return rejectWithValue(errorMessage);
     }
   },
 );
@@ -74,6 +82,13 @@ export const logoutUser = createAsyncThunk(
   async (_, { dispatch }) => {
     localStorage.removeItem("userData");
     dispatch(logout());
+    dispatch(
+      showAlert({
+        message: "User logged out successfully",
+        severity: "success",
+        open: true,
+      }),
+    );
   },
 );
 
@@ -87,38 +102,46 @@ const authSlice = createSlice({
     logout: (state) => {
       state.userData = null;
     },
-    setErrorMessage: (state, action: PayloadAction<string | null>) => {
-      state.errorMessage = action.payload;
-    },
-    setSuccessMessage: (state, action: PayloadAction<string | null>) => {
-      state.successMessage = action.payload;
-    },
   },
   extraReducers: (builder) => {
-    builder.addCase(registerUser.fulfilled, (state) => {
-      state.successMessage = "User registered successfully!";
+    builder.addCase(registerUser.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(registerUser.fulfilled, (state, action) => {
+      state.loading = false;
+      state.message = action.payload as string;
     });
     builder.addCase(registerUser.rejected, (state, action) => {
-      state.errorMessage = action.payload as string;
+      state.loading = false;
+      state.message = action.payload as string;
+    });
+
+    builder.addCase(loginUser.pending, (state) => {
+      state.loading = true;
     });
     builder.addCase(loginUser.fulfilled, (state, action) => {
+      state.loading = false;
       state.userData = action.payload;
-      state.successMessage = "User logged in successfully";
     });
     builder.addCase(loginUser.rejected, (state, action) => {
-      state.errorMessage = action.payload as string;
+      state.loading = false;
+      state.message = action.payload as string;
+    });
+
+    builder.addCase(logoutUser.pending, (state) => {
+      state.loading = true;
     });
     builder.addCase(logoutUser.fulfilled, (state) => {
+      state.loading = false;
       state.userData = null;
-      state.successMessage = "User logged out successfully";
     });
     builder.addCase(logoutUser.rejected, (state, action) => {
-      state.errorMessage = "Error logging out: " + action.error.message;
+      state.loading = false;
+      state.message = "Error logging out: " + action.error.message;
     });
   },
 });
 
-export const { login, logout, setErrorMessage, setSuccessMessage } =
-  authSlice.actions;
+export const { login, logout } = authSlice.actions;
 
 export default authSlice.reducer;

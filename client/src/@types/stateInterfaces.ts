@@ -42,8 +42,7 @@ export interface UserData {
 export interface AuthState {
   userData: UserData | null;
   loading: boolean;
-  errorMessage: string | null;
-  successMessage: string | null;
+  message: string | null;
 }
 
 export interface UploadStatus {

@@ -78,11 +78,13 @@ export const signInFields = [
     label: "Email",
     id: "email",
     type: "text",
+    autoComplete: "email",
   },
   {
     name: "password" as const,
     label: "Password",
     id: "password",
     type: "password",
+    autoComplete: "current-password",
   },
 ];

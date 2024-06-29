@@ -1,6 +1,5 @@
 import {
   Avatar,
-  Button,
   CssBaseline,
   TextField,
   Grid,
@@ -8,22 +7,23 @@ import {
   Typography,
   Container,
 } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 import { LockOutlined } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { z } from "zod";
-import { useAppDispatch } from "../store";
+import { RootState, useAppDispatch } from "../store";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { showAlert } from "../store/alertSlice";
 import { registerUser } from "../store/authSlice";
 import { FormDataSignUp, formSchema } from "../schemas/formSchema";
 import { signUpFields } from "../constants";
+import { useSelector } from "react-redux";
 
 const defaultTheme = createTheme();
 
 export default function SignUp() {
   const dispatch = useAppDispatch();
+  const isLoading = useSelector((state: RootState) => state.auth.loading);
   const navigate = useNavigate();
 
   const {
@@ -49,25 +49,9 @@ export default function SignUp() {
           name: data.name,
           password: data.password,
         }),
-      ).unwrap();
-
-      dispatch(
-        showAlert({
-          message: "Success! You have signed up",
-          open: true,
-          severity: "success",
-        }),
       );
       navigate("/signin");
-    } catch (error: any) {
-      dispatch(
-        showAlert({
-          message: error,
-          open: true,
-          severity: "error",
-        }),
-      );
-    }
+    } catch (error) {}
   };
 
   return (
@@ -116,20 +100,23 @@ export default function SignUp() {
                         autoComplete={id}
                         error={!!errors[name]}
                         helperText={errors[name] ? errors[name]?.message : ""}
+                        disabled={isLoading}
                       />
                     )}
                   />
                 </Grid>
               ))}
             </Grid>
-            <Button
+            <LoadingButton
               type="submit"
               fullWidth
               variant="contained"
+              loading={isLoading}
+              disabled={isLoading}
               sx={{ mt: 3, mb: 2 }}
             >
               Sign Up
-            </Button>
+            </LoadingButton>
             <Grid container justifyContent="flex-end">
               <Grid item>
                 <Link to="/signin">Already have an account? Sign in</Link>
