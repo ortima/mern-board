@@ -1,3 +1,3 @@
-export { mainListItems } from "./ListItems";
+export { ListItems } from "./ListItems";
 export { TableComponent } from "./Table";
 export { Title } from "./Title";

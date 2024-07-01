@@ -66,7 +66,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
               <CustomSelectFormControl
                 label="Type"
                 name="type"
-                value={transaction ? transaction.type : ""}
+                value={transaction?.type || ""}
                 options={typeOptions}
                 onChange={handleFieldChange}
               />
@@ -74,7 +74,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
               <CustomSelectFormControl
                 label="Category"
                 name="category"
-                value={transaction ? transaction.category : ""}
+                value={transaction?.category || ""}
                 options={categoryOptions}
                 onChange={handleFieldChange}
               />
@@ -83,7 +83,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                 <TextField
                   label="Description"
                   name="description"
-                  value={transaction ? transaction.description : ""}
+                  value={transaction?.description || ""}
                   onChange={handleFieldChange}
                   required
                 />
@@ -94,7 +94,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                   label="Amount"
                   type="number"
                   name="amount"
-                  value={transaction ? transaction.amount : ""}
+                  value={transaction?.amount || ""}
                   onChange={handleFieldChange}
                   required
                 />

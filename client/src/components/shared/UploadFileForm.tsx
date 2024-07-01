@@ -63,7 +63,7 @@ export const UploadFileForm: React.FC = () => {
             })),
           );
           setSuccessfulUploads(
-            successes.map((status) => ({ record: status.record })),
+            successes.map(({ record }) => ({ record: record })),
           );
 
           const alertMessage = statuses.every(
@@ -75,7 +75,7 @@ export const UploadFileForm: React.FC = () => {
           dispatch(
             showAlert({
               open: true,
-              severity: statuses.every((status) => status.status === "success")
+              severity: statuses.every(({ status }) => status === "success")
                 ? "success"
                 : "warning",
               message: alertMessage,

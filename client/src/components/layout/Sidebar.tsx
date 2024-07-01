@@ -1,8 +1,8 @@
 import { Toolbar, Divider, IconButton, List } from "@mui/material";
 import { ChevronLeft } from "@mui/icons-material";
-import { mainListItems } from "../dashboard";
 import { StyledDrawer } from "../styled";
 import { SidebarProps } from "../../@types/componentsInterfaces";
+import { ListItems } from "../dashboard";
 
 export const Sidebar: React.FC<SidebarProps> = ({ open, toggleDrawer }) => {
   return (
@@ -21,7 +21,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, toggleDrawer }) => {
       </Toolbar>
       <Divider />
       <List component="nav">
-        {mainListItems}
+        <ListItems />
         <Divider sx={{ my: 1 }} />
       </List>
     </StyledDrawer>

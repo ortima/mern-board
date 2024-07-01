@@ -18,13 +18,15 @@ const routes: RoutesProps[] = [
   },
 ];
 
-export const mainListItems = (
-  <>
-    {routes.map((route) => (
-      <ListItemButton key={route.id} component={Link} to={route.url}>
-        <ListItemIcon>{route.icon}</ListItemIcon>
-        <ListItemText primary={route.text} />
-      </ListItemButton>
-    ))}
-  </>
-);
+export const ListItems = () => {
+  return (
+    <>
+      {routes.map((route) => (
+        <ListItemButton key={route.id} component={Link} to={route.url}>
+          <ListItemIcon>{route.icon}</ListItemIcon>
+          <ListItemText primary={route.text} />
+        </ListItemButton>
+      ))}
+    </>
+  );
+};

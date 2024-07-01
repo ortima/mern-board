@@ -9,7 +9,10 @@ export const CustomAlert: React.FC = () => {
     (state: RootState) => state.alert,
   );
 
-  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+  const handleClose = (
+    event?: React.SyntheticEvent<Element, Event> | Event,
+    reason?: string,
+  ) => {
     if (reason === "clickaway") {
       return;
     }
@@ -17,7 +20,7 @@ export const CustomAlert: React.FC = () => {
   };
 
   return (
-    <Snackbar open={open} autoHideDuration={2000} onClose={() => handleClose()}>
+    <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
       <MuiAlert
         onClose={handleClose}
         severity={severity}
