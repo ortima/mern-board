@@ -39,3 +39,12 @@ export const formatTransaction = (transaction: Transaction) => ({
   category: transformCategory(transaction.category),
   amount: formatAmount(transaction.amount),
 });
+
+export const getAuthToken = () => {
+  const userDataString = localStorage.getItem("userData");
+  if (userDataString) {
+    const userData = JSON.parse(userDataString);
+    return userData.token;
+  }
+  return null;
+};

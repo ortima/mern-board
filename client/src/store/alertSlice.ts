@@ -1,11 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from ".";
+import { AlertState } from "../@types/stateInterfaces";
 
-interface AlertState {
-  open: boolean;
-  severity: "success" | "info" | "warning" | "error";
-  message: string;
-}
 const initialState: AlertState = {
   message: "",
   severity: "info",

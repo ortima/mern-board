@@ -69,7 +69,7 @@ export const useTransactionForm = (isEdit: boolean) => {
     const data = {
       ...transaction,
       userId,
-      amount: amount,
+      amount,
     };
 
     try {

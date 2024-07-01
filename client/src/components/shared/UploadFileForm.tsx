@@ -120,11 +120,11 @@ export const UploadFileForm: React.FC = () => {
         }}
       >
         <input {...getInputProps()} />
-        {isDragActive ? (
-          <Typography>Drop the files here ...</Typography>
-        ) : (
-          <Typography>Drag 'n' drop some files here</Typography>
-        )}
+        <Typography>
+          {isDragActive
+            ? "Drop the files here ..."
+            : "Drag 'n' drop some files here"}
+        </Typography>
       </Box>
       {file && (
         <Box mt={2}>
@@ -144,8 +144,8 @@ export const UploadFileForm: React.FC = () => {
           <Typography variant="h6">Successful Uploads</Typography>
         )}
         <List>
-          {successfulUploads.map((status, index) => (
-            <ListItem key={index}>
+          {successfulUploads.map((status) => (
+            <ListItem key={status.record}>
               <Chip
                 label={`Record ${status.record}: Success`}
                 variant="outlined"
@@ -160,8 +160,8 @@ export const UploadFileForm: React.FC = () => {
           </Typography>
         )}
         <List>
-          {uploadErrors.map((error, index) => (
-            <ListItem key={index}>
+          {uploadErrors.map((error) => (
+            <ListItem key={error.record}>
               <Chip
                 label={`Record ${error.record}: Failed (${error.error})`}
                 variant="outlined"

@@ -49,3 +49,10 @@ export interface UploadStatus {
   record: number;
   error?: string;
 }
+
+//alertSlice
+export interface AlertState {
+  open: boolean;
+  severity: "success" | "info" | "warning" | "error";
+  message: string;
+}

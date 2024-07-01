@@ -66,3 +66,8 @@ export interface AppBarProps extends MuiAppBarProps {
 export interface TransactionModalProps {
   isEdit: boolean;
 }
+
+export interface AppBarProps extends MuiAppBarProps {
+  open?: boolean;
+  toggleDrawer?: () => void;
+}

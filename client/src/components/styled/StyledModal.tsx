@@ -66,17 +66,13 @@ export const ModalContent = styled("div")(
     color: ${theme.palette.mode === "dark" ? grey[50] : grey[900]};
 
     & .modal-title {
-      margin: 0;
       line-height: 1.5rem;
-      margin-bottom: 8px;
     }
 
     & .modal-description {
-      margin: 0;
       line-height: 1.5rem;
       font-weight: 400;
       color: ${theme.palette.mode === "dark" ? grey[400] : grey[800]};
-      margin-bottom: 4px;
     }
   `,
 );

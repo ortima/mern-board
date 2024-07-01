@@ -8,6 +8,7 @@ import {
   TransactionsState,
   UploadStatus,
 } from "../@types/stateInterfaces";
+import { getAuthToken } from "../utils/transactionsUtils";
 
 const initialState: TransactionsState = {
   transactions: [],
@@ -17,23 +18,16 @@ const initialState: TransactionsState = {
   selectedTransactionIds: [],
 };
 
-export const getAuthToken = () => {
-  const userDataString = localStorage.getItem("userData");
-  if (userDataString) {
-    const userData = JSON.parse(userDataString);
-    return userData.token;
-  }
-  return null;
-};
+const getAuthHeaders = () => ({
+  Authorization: `Bearer ${getAuthToken()}`,
+  "Content-Type": "application/json",
+});
 
 export const fetchTransactions = createAsyncThunk(
   "transactions/fetchTransactions",
   async () => {
-    const token = getAuthToken();
     const response = await axios.get("/api/transactions", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: getAuthHeaders(),
     });
     return response.data;
   },
@@ -42,12 +36,8 @@ export const fetchTransactions = createAsyncThunk(
 export const addTransaction = createAsyncThunk(
   "transactions/addTransaction",
   async (transaction: NewTransaction) => {
-    const token = getAuthToken();
     const response = await axios.post("/api/transactions", transaction, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: getAuthHeaders(),
     });
     return response.data;
   },
@@ -56,15 +46,11 @@ export const addTransaction = createAsyncThunk(
 export const updateTransactionAsync = createAsyncThunk(
   "transactions/updateTransaction",
   async (transaction: Transaction) => {
-    const token = getAuthToken();
     const response = await axios.put(
       `/api/transactions/${transaction.transactionId}`,
       transaction,
       {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: getAuthHeaders(),
       },
     );
     return response.data;
@@ -74,13 +60,9 @@ export const updateTransactionAsync = createAsyncThunk(
 export const removeTransactions = createAsyncThunk(
   "transactions/removeTransactions",
   async (transactionIds: string[]) => {
-    const token = getAuthToken();
     await axios.delete("/api/transactions", {
       data: { transactionIds },
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: getAuthHeaders(),
     });
     return transactionIds;
   },
@@ -91,7 +73,6 @@ export const uploadFile = createAsyncThunk<
   any[],
   { state: RootState }
 >("transactions/uploadFile", async (jsonData, { rejectWithValue }) => {
-  const token = getAuthToken();
   let statuses: UploadStatus[] = [];
 
   const isValidType = (type: string) =>
@@ -103,42 +84,33 @@ export const uploadFile = createAsyncThunk<
     for (let i = 0; i < jsonData.length; i++) {
       const item = jsonData[i];
       const amount = parseFloat(item.amount);
+      const getFailedData = (record: number, error: string) => ({
+        record,
+        status: "failed",
+        error,
+      });
+      const getSuccessData = (record: number) => ({
+        record,
+        status: "success",
+      });
       if (isNaN(amount) || amount <= 0) {
-        statuses.push({
-          record: i + 1,
-          status: "failed",
-          error: "Invalid amount",
-        });
+        statuses.push(getFailedData(i + 1, "Invalid amount"));
       } else if (!isValidType(item.type)) {
-        statuses.push({
-          record: i + 1,
-          status: "failed",
-          error: "Invalid type",
-        });
+        statuses.push(getFailedData(i + 1, "Invalid type"));
       } else if (!isValidCategory(item.category)) {
-        statuses.push({
-          record: i + 1,
-          status: "failed",
-          error: "Invalid category",
-        });
+        statuses.push(getFailedData(i + 1, "Invalid category"));
       } else {
         const response = await axios.post(
           "/api/transactions/upload-data",
           [item],
           {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
+            headers: getAuthHeaders(),
           },
         );
         if (!response.status.toString().startsWith("2")) {
           throw new Error(`Server error: ${response.statusText}`);
         }
-        statuses.push({
-          record: i + 1,
-          status: "success",
-        });
+        statuses.push(getSuccessData(i + 1));
       }
     }
     return statuses;

@@ -4,12 +4,8 @@ import {
   themeAnimationLeaving,
 } from "../../constants";
 import { styled } from "@mui/material";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
-  toggleDrawer?: () => void;
-}
+import MuiAppBar from "@mui/material/AppBar";
+import { AppBarProps } from "../../@types/componentsInterfaces";
 
 export const StyledAppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
