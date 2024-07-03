@@ -6,7 +6,7 @@ const PrivateRoute: React.FC = () => {
   const userData = useSelector((state: RootState) => state.auth.userData);
 
   if (!userData) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/signin" />;
   }
   return <Outlet />;
 };

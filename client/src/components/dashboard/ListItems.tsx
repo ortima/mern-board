@@ -1,13 +1,7 @@
 import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { Dashboard, PieChart } from "@mui/icons-material";
 import { Link } from "react-router-dom";
-
-interface RoutesProps {
-  id: number;
-  url: string;
-  text: string;
-  icon: React.ReactNode;
-}
+import { RoutesProps } from "../../@types/componentsInterfaces";
 
 const routes: RoutesProps[] = [
   {
@@ -24,13 +18,15 @@ const routes: RoutesProps[] = [
   },
 ];
 
-export const mainListItems = (
-  <>
-    {routes.map((route) => (
-      <ListItemButton key={route.id} component={Link} to={route.url}>
-        <ListItemIcon>{route.icon}</ListItemIcon>
-        <ListItemText primary={route.text} />
-      </ListItemButton>
-    ))}
-  </>
-);
+export const ListItems = () => {
+  return (
+    <>
+      {routes.map((route) => (
+        <ListItemButton key={route.id} component={Link} to={route.url}>
+          <ListItemIcon>{route.icon}</ListItemIcon>
+          <ListItemText primary={route.text} />
+        </ListItemButton>
+      ))}
+    </>
+  );
+};

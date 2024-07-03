@@ -1,36 +1,18 @@
-import { Box, Typography, Container, Paper, Link } from "@mui/material";
-import Layout from "../components/Layout";
-import TableComponent from "../components/dashboard/Table";
-import AddModal from "../components/dashboard/AddModal";
-
-function Copyright(props: any) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>
-      {new Date().getFullYear()}
-    </Typography>
-  );
-}
+import { Box, Typography, Container, Paper } from "@mui/material";
+import { TableComponent } from "../components/dashboard";
+import { CustomDeal } from "../components/shared";
+import { DashboardLayout } from "../components/layout";
+import { TransactionModal } from "../components/modals";
 
 export default function Dashboard() {
   return (
-    <Layout>
+    <DashboardLayout>
       <Box sx={{ display: "flex" }}>
         <Box
           component="main"
           sx={{
             backgroundColor: (theme) =>
-              theme.palette.mode === "light"
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
+              theme.palette.grey[theme.palette.mode === "light" ? 100 : 900],
             flexGrow: 1,
             height: "100vh",
             overflow: "auto",
@@ -42,7 +24,8 @@ export default function Dashboard() {
                 Transactions
               </Typography>
 
-              <AddModal />
+              <TransactionModal isEdit={true} />
+              <TransactionModal isEdit={false} />
             </Box>
             <Paper
               sx={{
@@ -55,10 +38,11 @@ export default function Dashboard() {
             >
               <TableComponent />
             </Paper>
-            <Copyright sx={{ pt: 4 }} />
+
+            <CustomDeal />
           </Container>
         </Box>
       </Box>
-    </Layout>
+    </DashboardLayout>
   );
 }

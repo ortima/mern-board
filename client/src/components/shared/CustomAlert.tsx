@@ -1,23 +1,33 @@
-import { Snackbar, Alert } from "@mui/material";
+import { Snackbar, Alert as MuiAlert } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../store";
+import { closeAlert } from "../../store/alertSlice";
 
-export interface CustomAlertProps {
-  open: boolean;
-  severity: "error" | "warning" | "info" | "success";
-  message: string;
-  onClose?: () => void;
-}
+export const CustomAlert: React.FC = () => {
+  const dispatch = useDispatch();
+  const { message, open, severity } = useSelector(
+    (state: RootState) => state.alert,
+  );
 
-export function CustomAlert({
-  open,
-  severity,
-  message,
-  onClose,
-}: CustomAlertProps) {
+  const handleClose = (
+    event?: React.SyntheticEvent<Element, Event> | Event,
+    reason?: string,
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    dispatch(closeAlert());
+  };
+
   return (
-    <Snackbar open={open} onClose={onClose}>
-      <Alert onClose={onClose} severity={severity} sx={{ width: "100%" }}>
+    <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+      <MuiAlert
+        onClose={handleClose}
+        severity={severity}
+        sx={{ width: "100%" }}
+      >
         {message}
-      </Alert>
+      </MuiAlert>
     </Snackbar>
   );
-}
+};

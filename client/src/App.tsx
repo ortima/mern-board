@@ -1,23 +1,26 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Login from "./pages/Login";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
 import PrivateRoute from "./utils/ProtectedRoutes";
-import Registration from "./pages/Registration";
 import Dashboard from "./pages/Dashboard";
 import { Provider } from "react-redux";
 import { store } from "./store";
+import { AppLayout } from "./components/layout";
 
 const App = () => {
   return (
     <Provider store={store}>
       <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/registration" element={<Registration />} />
-          <Route element={<PrivateRoute />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-          </Route>
-        </Routes>
+        <AppLayout>
+          <Routes>
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/" element={<Navigate to="/signin" replace />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route element={<PrivateRoute />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Route>
+          </Routes>
+        </AppLayout>
       </BrowserRouter>
     </Provider>
   );

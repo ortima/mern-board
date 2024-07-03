@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
+import { Delete } from "@mui/icons-material";
+import { Button, CircularProgress, Typography } from "@mui/material";
 import {
   SelectionState,
   PagingState,
@@ -19,22 +19,13 @@ import { RootState, useAppDispatch } from "../../store";
 import {
   fetchTransactions,
   removeTransactions,
-  Transaction,
-  updateTransactionAsync,
+  setSelectedTransactionIds,
 } from "../../store/transactionSlice";
-import { Button } from "@mui/material";
 import { formatTransaction } from "../../utils/transactionsUtils";
-import EditModal from "./EditModal";
+import { COLUMNS } from "../../constants";
+import useAlert from "../../hooks/useAlert";
 
-const COLUMNS = [
-  { name: "createdAt", title: "Дата" },
-  { name: "type", title: "Тип" },
-  { name: "category", title: "Категория" },
-  { name: "description", title: "Описание" },
-  { name: "amount", title: "Сумма" },
-];
-
-const TableComponent: React.FC = () => {
+export const TableComponent: React.FC = () => {
   const dispatch = useAppDispatch();
   const transactions = useSelector(
     (state: RootState) => state.transactions.transactions,
@@ -42,9 +33,10 @@ const TableComponent: React.FC = () => {
   const loading = useSelector((state: RootState) => state.transactions.loading);
   const error = useSelector((state: RootState) => state.transactions.error);
   const [selection, setSelection] = useState<(string | number)[]>([]);
-  const [editPopupOpen, setEditPopupOpen] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] =
-    useState<Transaction | null>(null);
+  const { infoAlert } = useAlert();
+
+  dispatch(setSelectedTransactionIds(selection));
+
   useEffect(() => {
     dispatch(fetchTransactions());
   }, [dispatch]);
@@ -52,90 +44,53 @@ const TableComponent: React.FC = () => {
   const handleDeleteSelected = () => {
     const selectedTransactionIds = selection.map((id) => id.toString());
     dispatch(removeTransactions(selectedTransactionIds));
+    infoAlert(
+      `Deleted ${selectedTransactionIds.length} ${selectedTransactionIds.length === 1 ? `item` : `items`}`,
+    );
     setSelection([]);
-  };
-
-  const handleEditSelected = () => {
-    if (selection.length === 1) {
-      const selectedTransaction = transactions.find(
-        (transaction) => transaction.transactionId === selection[0],
-      );
-      if (selectedTransaction) {
-        setSelectedTransaction(selectedTransaction);
-        setEditPopupOpen(true);
-      }
-    }
   };
 
   const formattedTransactions = transactions.map((transaction) =>
     formatTransaction(transaction),
   );
 
-  const handleCloseEditPopup = () => {
-    setEditPopupOpen(false);
-    setSelectedTransaction(null);
-  };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  const handleSave = (updatedTransaction: Transaction) => {
-    dispatch(updateTransactionAsync(updatedTransaction));
-    handleCloseEditPopup();
-  };
-
   return (
     <>
-      <Grid
-        rows={formattedTransactions}
-        columns={COLUMNS}
-        getRowId={(row) => row.transactionId}
-      >
-        <PagingState defaultCurrentPage={0} pageSize={6} />
-        <SelectionState
-          selection={selection}
-          onSelectionChange={setSelection}
-        />
-        <IntegratedPaging />
-        <IntegratedSelection />
-        <Table />
-        <TableHeaderRow />
-        <TableSelection showSelectAll />
-        <PagingPanel />
-      </Grid>
+      {loading ? (
+        <CircularProgress sx={{ mx: "auto" }} />
+      ) : !error ? (
+        <Typography color="error">Error: {error}</Typography>
+      ) : (
+        <Grid
+          rows={formattedTransactions}
+          columns={COLUMNS}
+          getRowId={(row) => row.transactionId}
+        >
+          <PagingState defaultCurrentPage={0} pageSize={6} />
+          <SelectionState
+            selection={selection}
+            onSelectionChange={setSelection}
+          />
+          <IntegratedPaging />
+          <IntegratedSelection />
+          <Table />
+          <TableHeaderRow />
+          <TableSelection showSelectAll />
+          <PagingPanel />
+        </Grid>
+      )}
 
       <Button
-        startIcon={<DeleteIcon />}
-        sx={{ display: selection.length > 0 ? "inline-flex" : "none", ml: 1 }}
+        startIcon={<Delete />}
+        sx={{
+          display: selection.length > 0 ? "inline-flex" : "none",
+          ml: 1,
+        }}
         onClick={handleDeleteSelected}
         disabled={selection.length === 0}
       >
         Delete Selected
       </Button>
-
-      <Button
-        startIcon={<EditIcon />}
-        sx={{ display: selection.length === 1 ? "inline-flex" : "none", ml: 1 }}
-        onClick={handleEditSelected}
-        disabled={selection.length !== 1}
-      >
-        Edit Selected
-      </Button>
-
-      {editPopupOpen && (
-        <EditModal
-          transaction={selectedTransaction}
-          open={editPopupOpen}
-          onClose={handleCloseEditPopup}
-          onSave={handleSave}
-        />
-      )}
     </>
   );
 };
-
-export default TableComponent;

@@ -1,19 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-
-interface UserData {
-  token: string;
-  userId: string;
-  email?: string;
-  name?: string;
-}
-
-interface AuthState {
-  userData: UserData | null;
-  loading: boolean;
-  errorMessage: string | null;
-  successMessage: string | null;
-}
+import { AuthState, UserData } from "../@types/stateInterfaces";
+import { showAlert } from "./alertSlice";
 
 const loadUserDataFromLocalStorage = (): UserData | null => {
   const userDataString = localStorage.getItem("userData");
@@ -26,29 +14,66 @@ const loadUserDataFromLocalStorage = (): UserData | null => {
 const initialState: AuthState = {
   userData: loadUserDataFromLocalStorage(),
   loading: false,
-  errorMessage: null,
-  successMessage: null,
+  message: null,
 };
 
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
-  async (userData: { name: string; email: string; password: string }) => {
-    const response = await axios.post("/api/registration", userData);
-    return response.data;
+  async (
+    userData: { name: string; email: string; password: string },
+    { dispatch, rejectWithValue },
+  ) => {
+    try {
+      const response = await axios.post("/api/registration", userData);
+      dispatch(
+        showAlert({
+          message: "User registered successfully!",
+          severity: "success",
+          open: true,
+        }),
+      );
+      return response.data;
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "An unexpected error occurred.";
+      dispatch(
+        showAlert({ message: errorMessage, severity: "error", open: true }),
+      );
+      return rejectWithValue(errorMessage);
+    }
   },
 );
 
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
-  async (userData: { email: string; password: string }, { dispatch }) => {
-    const response = await axios.post("/api/login", userData);
-    const { token, userId, email, name } = response.data;
-    localStorage.setItem(
-      "userData",
-      JSON.stringify({ token, userId, email, name }),
-    );
-    dispatch(login({ token, userId, email, name }));
-    return { token, userId, email, name };
+  async (
+    userData: { email: string; password: string },
+    { dispatch, rejectWithValue },
+  ) => {
+    try {
+      const response = await axios.post("/api/login", userData);
+      const { token, userId, email, name } = response.data;
+      localStorage.setItem(
+        "userData",
+        JSON.stringify({ token, userId, email, name }),
+      );
+      dispatch(login({ token, userId, email, name }));
+      dispatch(
+        showAlert({
+          message: "User logged in successfully",
+          severity: "success",
+          open: true,
+        }),
+      );
+      return { token, userId, email, name };
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "An unexpected error occurred.";
+      dispatch(
+        showAlert({ message: errorMessage, severity: "error", open: true }),
+      );
+      return rejectWithValue(errorMessage);
+    }
   },
 );
 
@@ -57,6 +82,13 @@ export const logoutUser = createAsyncThunk(
   async (_, { dispatch }) => {
     localStorage.removeItem("userData");
     dispatch(logout());
+    dispatch(
+      showAlert({
+        message: "User logged out successfully",
+        severity: "success",
+        open: true,
+      }),
+    );
   },
 );
 
@@ -70,38 +102,46 @@ const authSlice = createSlice({
     logout: (state) => {
       state.userData = null;
     },
-    setErrorMessage: (state, action: PayloadAction<string | null>) => {
-      state.errorMessage = action.payload;
-    },
-    setSuccessMessage: (state, action: PayloadAction<string | null>) => {
-      state.successMessage = action.payload;
-    },
   },
   extraReducers: (builder) => {
-    builder.addCase(registerUser.fulfilled, (state) => {
-      state.successMessage = "User registered successfully!";
+    builder.addCase(registerUser.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(registerUser.fulfilled, (state, action) => {
+      state.loading = false;
+      state.message = action.payload as string;
     });
     builder.addCase(registerUser.rejected, (state, action) => {
-      state.errorMessage = "Error registering user: " + action.error.message;
+      state.loading = false;
+      state.message = action.payload as string;
+    });
+
+    builder.addCase(loginUser.pending, (state) => {
+      state.loading = true;
     });
     builder.addCase(loginUser.fulfilled, (state, action) => {
+      state.loading = false;
       state.userData = action.payload;
-      state.successMessage = "User logged in successfully";
     });
     builder.addCase(loginUser.rejected, (state, action) => {
-      state.errorMessage = "Error logging in: " + action.error.message;
+      state.loading = false;
+      state.message = action.payload as string;
+    });
+
+    builder.addCase(logoutUser.pending, (state) => {
+      state.loading = true;
     });
     builder.addCase(logoutUser.fulfilled, (state) => {
+      state.loading = false;
       state.userData = null;
-      state.successMessage = "User logged out successfully";
     });
     builder.addCase(logoutUser.rejected, (state, action) => {
-      state.errorMessage = "Error logging out: " + action.error.message;
+      state.loading = false;
+      state.message = "Error logging out: " + action.error.message;
     });
   },
 });
 
-export const { login, logout, setErrorMessage, setSuccessMessage } =
-  authSlice.actions;
+export const { login, logout } = authSlice.actions;
 
 export default authSlice.reducer;

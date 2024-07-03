@@ -1,9 +1,6 @@
 import { format } from "date-fns";
-import { Transaction } from "../store/transactionSlice";
-
-interface TransformEntities {
-  [key: string]: string;
-}
+import { Transaction } from "../@types/stateInterfaces";
+import { TransformEntities } from "../@types/utilsInterfaces";
 
 export const formatDate = (dateString: string) => {
   return format(new Date(dateString), "yyyy-MM-dd");
@@ -42,3 +39,12 @@ export const formatTransaction = (transaction: Transaction) => ({
   category: transformCategory(transaction.category),
   amount: formatAmount(transaction.amount),
 });
+
+export const getAuthToken = () => {
+  const userDataString = localStorage.getItem("userData");
+  if (userDataString) {
+    const userData = JSON.parse(userDataString);
+    return userData.token;
+  }
+  return null;
+};
