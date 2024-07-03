@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { Delete } from "@mui/icons-material";
+import { Button, CircularProgress, Typography } from "@mui/material";
 import {
   SelectionState,
   PagingState,
@@ -20,9 +21,9 @@ import {
   removeTransactions,
   setSelectedTransactionIds,
 } from "../../store/transactionSlice";
-import { Button } from "@mui/material";
 import { formatTransaction } from "../../utils/transactionsUtils";
 import { COLUMNS } from "../../constants";
+import useAlert from "../../hooks/useAlert";
 
 export const TableComponent: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -32,6 +33,7 @@ export const TableComponent: React.FC = () => {
   const loading = useSelector((state: RootState) => state.transactions.loading);
   const error = useSelector((state: RootState) => state.transactions.error);
   const [selection, setSelection] = useState<(string | number)[]>([]);
+  const { infoAlert } = useAlert();
 
   dispatch(setSelectedTransactionIds(selection));
 
@@ -42,6 +44,9 @@ export const TableComponent: React.FC = () => {
   const handleDeleteSelected = () => {
     const selectedTransactionIds = selection.map((id) => id.toString());
     dispatch(removeTransactions(selectedTransactionIds));
+    infoAlert(
+      `Deleted ${selectedTransactionIds.length} ${selectedTransactionIds.length === 1 ? `item` : `items`}`,
+    );
     setSelection([]);
   };
 
@@ -49,36 +54,38 @@ export const TableComponent: React.FC = () => {
     formatTransaction(transaction),
   );
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
   return (
     <>
-      <Grid
-        rows={formattedTransactions}
-        columns={COLUMNS}
-        getRowId={(row) => row.transactionId}
-      >
-        <PagingState defaultCurrentPage={0} pageSize={6} />
-        <SelectionState
-          selection={selection}
-          onSelectionChange={setSelection}
-        />
-        <IntegratedPaging />
-        <IntegratedSelection />
-        <Table />
-        <TableHeaderRow />
-        <TableSelection showSelectAll />
-        <PagingPanel />
-      </Grid>
+      {loading ? (
+        <CircularProgress sx={{ mx: "auto" }} />
+      ) : !error ? (
+        <Typography color="error">Error: {error}</Typography>
+      ) : (
+        <Grid
+          rows={formattedTransactions}
+          columns={COLUMNS}
+          getRowId={(row) => row.transactionId}
+        >
+          <PagingState defaultCurrentPage={0} pageSize={6} />
+          <SelectionState
+            selection={selection}
+            onSelectionChange={setSelection}
+          />
+          <IntegratedPaging />
+          <IntegratedSelection />
+          <Table />
+          <TableHeaderRow />
+          <TableSelection showSelectAll />
+          <PagingPanel />
+        </Grid>
+      )}
 
       <Button
-        startIcon={<DeleteIcon />}
-        sx={{ display: selection.length > 0 ? "inline-flex" : "none", ml: 1 }}
+        startIcon={<Delete />}
+        sx={{
+          display: selection.length > 0 ? "inline-flex" : "none",
+          ml: 1,
+        }}
         onClick={handleDeleteSelected}
         disabled={selection.length === 0}
       >

@@ -7,11 +7,12 @@ import {
 } from "../store/transactionSlice";
 import { NewTransaction, Transaction } from "../@types/stateInterfaces";
 import { SelectChangeEvent } from "@mui/material";
-import { showAlert } from "../store/alertSlice";
 import { Form } from "../@types/componentsInterfaces";
+import useAlert from "./useAlert";
 
 export const useTransactionForm = (isEdit: boolean) => {
   const dispatch = useAppDispatch();
+  const { successAlert, errorAlert } = useAlert();
   const [open, setOpen] = useState<boolean>(false);
 
   const [transaction, setTransaction] = useState<
@@ -51,13 +52,7 @@ export const useTransactionForm = (isEdit: boolean) => {
     const userId = userData ? userData.userId : null;
 
     if (!userId) {
-      dispatch(
-        showAlert({
-          message: "User ID not found. Please log in again.",
-          open: true,
-          severity: "warning",
-        }),
-      );
+      errorAlert("User ID not found. Please log in again.");
       return;
     }
 
@@ -82,30 +77,16 @@ export const useTransactionForm = (isEdit: boolean) => {
 
       if (response.meta.requestStatus === "fulfilled") {
         setOpen(false);
-        dispatch(
-          showAlert({
-            message: `Transaction ${isEdit ? "updated" : "added"} successfully!`,
-            severity: "success",
-            open: true,
-          }),
+        successAlert(
+          `Transaction ${isEdit ? "updated" : "added"} successfully!`,
         );
       } else {
-        dispatch(
-          showAlert({
-            message: `Failed to ${isEdit ? "update" : "add"} transaction. Please try again.`,
-            severity: "error",
-            open: true,
-          }),
+        errorAlert(
+          `Failed to ${isEdit ? "update" : "add"} transaction. Please try again.`,
         );
       }
     } catch (error) {
-      dispatch(
-        showAlert({
-          message: "An error occurred. Please try again.",
-          severity: "error",
-          open: true,
-        }),
-      );
+      errorAlert(`An ${error} occurred. Please try again.`);
     }
   };
 

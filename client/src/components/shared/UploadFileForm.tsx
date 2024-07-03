@@ -4,7 +4,7 @@ import * as XLSX from "xlsx";
 import { useDropzone } from "react-dropzone";
 import { useAppDispatch } from "../../store";
 import { uploadFile, fetchTransactions } from "../../store/transactionSlice";
-import { showAlert } from "../../store/alertSlice";
+import useAlert from "../../hooks/useAlert";
 
 interface UploadStatus {
   record: number;
@@ -12,6 +12,7 @@ interface UploadStatus {
 }
 
 export const UploadFileForm: React.FC = () => {
+  const { errorAlert, successAlert, warningAlert } = useAlert();
   const [file, setFile] = useState<File | null>(null);
   const [uploadErrors, setUploadErrors] = useState<UploadStatus[]>([]);
   const [successfulUploads, setSuccessfulUploads] = useState<UploadStatus[]>(
@@ -29,13 +30,8 @@ export const UploadFileForm: React.FC = () => {
 
   const handleUpload = useCallback(async () => {
     if (!file) {
-      dispatch(
-        showAlert({
-          open: true,
-          message: "No file selected",
-          severity: "error",
-        }),
-      );
+      errorAlert("No file selected");
+
       return;
     }
 
@@ -72,37 +68,19 @@ export const UploadFileForm: React.FC = () => {
             ? "File uploaded successfully"
             : "File uploaded with errors";
 
-          dispatch(
-            showAlert({
-              open: true,
-              severity: statuses.every(({ status }) => status === "success")
-                ? "success"
-                : "warning",
-              message: alertMessage,
-            }),
-          );
+          statuses.every(({ status }) => status === "success")
+            ? successAlert(alertMessage)
+            : warningAlert(alertMessage);
 
           dispatch(fetchTransactions());
         } catch (error) {
-          dispatch(
-            showAlert({
-              open: true,
-              severity: "error",
-              message: `Error uploading file: ${error}`,
-            }),
-          );
+          errorAlert(`Error uploading file ${error}`);
         }
       }
     };
 
     reader.onerror = (error) => {
-      dispatch(
-        showAlert({
-          open: true,
-          severity: "error",
-          message: `Error uploading file: ${error}`,
-        }),
-      );
+      errorAlert(`Error uploading file ${error}`);
     };
 
     reader.readAsArrayBuffer(file);
